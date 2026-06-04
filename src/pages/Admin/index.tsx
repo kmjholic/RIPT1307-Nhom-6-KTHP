@@ -1,17 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, history, useLocation } from '@umijs/max';
-import { Layout, Menu, Button } from 'antd';
+import { Layout, Menu, Button, message } from 'antd';
 import {
   HomeOutlined, FileTextOutlined, UsersOutlined,
   BarChartOutlined, LogoutOutlined, WarningOutlined,
 } from '@ant-design/icons';
 import { authUtils } from '@/utils/auth';
+import { isAdmin } from '@/server/models/User';
 import styles from './index.less';
 
 const { Sider, Content } = Layout;
 
 export default function Admin() {
   const location = useLocation();
+
+  useEffect(() => {
+    const user = authUtils.getCurrentUser();
+    if (!user || !isAdmin(user)) {
+      message.warning('Bạn không có quyền truy cập khu vực quản trị');
+      history.replace('/login');
+    }
+  }, []);
 
   const handleLogout = () => {
     authUtils.logout();

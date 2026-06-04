@@ -11,46 +11,10 @@ import {
 } from '@ant-design/icons';
 import { history } from '@umijs/max';
 import PostCard from '@/components/PostCard';
+import { MOCK_QUESTIONS } from '@/server/seed/questions';
 import styles from './index.less';
 
-const mockPosts = [
-  {
-    id: '1', title: 'Giải thích OOP trong Java: Class, Object, Inheritance và Polymorphism',
-    excerpt: 'OOP là nền tảng của Java. Trong bài viết này, tôi sẽ giải thích chi tiết về các khái niệm cốt lõi như Class, Object, Inheritance và cách sử dụng trong thực tế...',
-    author: 'Nguyễn Văn A', tags: ['Java', 'OOP', 'Lập Trình'],
-    votes: 45, comments: 12, views: 523, timestamp: '2 giờ trước', subject: 'Lập Trình Cơ Bản', isSolved: true,
-  },
-  {
-    id: '2', title: 'React Hooks: useState, useEffect, useContext - Hướng dẫn toàn diện',
-    excerpt: 'React Hooks là một cách mới để viết components trong React. Bài viết này sẽ hướng dẫn bạn cách sử dụng các hooks phổ biến nhất trong dự án thực tế...',
-    author: 'Trần Thị B', tags: ['React', 'JavaScript', 'Web Development'],
-    votes: 67, comments: 23, views: 892, timestamp: '5 giờ trước', subject: 'Web Development', isSolved: false,
-  },
-  {
-    id: '3', title: 'Cấu trúc dữ liệu: Stack và Queue - Cài đặt và ứng dụng thực tế',
-    excerpt: 'Stack và Queue là hai cấu trúc dữ liệu quan trọng. Hôm nay chúng ta sẽ tìm hiểu về cách thực hiện, ứng dụng trong thực tế và so sánh với các CTDL khác...',
-    author: 'Lê Văn C', tags: ['Cấu Trúc Dữ Liệu', 'Thuật Toán', 'Java'],
-    votes: 34, comments: 8, views: 421, timestamp: '1 ngày trước', subject: 'Cấu Trúc Dữ Liệu', isSolved: true,
-  },
-  {
-    id: '4', title: 'SQL: JOIN, Subquery, và Optimization - Tối ưu truy vấn database',
-    excerpt: 'JOIN là một trong những khái niệm quan trọng nhất trong SQL. Bài viết này sẽ giáo dạy bạn cách dùng các loại JOIN, subquery và tối ưu performance...',
-    author: 'Phạm Minh D', tags: ['SQL', 'Database', 'Optimization'],
-    votes: 56, comments: 15, views: 734, timestamp: '2 ngày trước', subject: 'Cơ Sở Dữ Liệu', isSolved: false,
-  },
-  {
-    id: '5', title: 'Git & GitHub: Quản lý phiên bản hiệu quả cho team lớn',
-    excerpt: 'Git là công cụ không thể thiếu trong phát triển phần mềm. Hãy học cách sử dụng Git và GitHub trong môi trường team...',
-    author: 'Hoàng Anh E', tags: ['Git', 'GitHub', 'DevOps'],
-    votes: 78, comments: 31, views: 1023, timestamp: '3 ngày trước', isSolved: true,
-  },
-  {
-    id: '6', title: 'Python: List Comprehension, Lambda và Functional Programming',
-    excerpt: 'Python có những tính năng rất tiện lợi để viết code ngắn gọn. Hôm nay tôi sẽ chia sẻ các kỹ thuật nâng cao...',
-    author: 'Đặng Tuấn F', tags: ['Python', 'Lập Trình', 'Functional'],
-    votes: 42, comments: 11, views: 356, timestamp: '4 ngày trước', isSolved: false,
-  },
-];
+const mockPosts = MOCK_QUESTIONS;
 
 const topContributors = [
   { id: '3', name: 'PGS.TS Lê Minh Đức', role: 'teacher', rep: 5430, emoji: '🏆' },

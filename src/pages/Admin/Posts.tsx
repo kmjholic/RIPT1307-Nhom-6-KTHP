@@ -2,15 +2,20 @@ import React, { useState } from 'react';
 import { Button, Select, Input, Table, Tag, Space, Badge, Popconfirm, message } from 'antd';
 import { SearchOutlined, DeleteOutlined, PushpinOutlined, EyeOutlined, CheckOutlined } from '@ant-design/icons';
 import { history } from '@umijs/max';
+import { MOCK_QUESTIONS } from '@/server/seed/questions';
 import styles from './index.less';
 
-const POSTS = [
-  { id: '1', title: 'Giải thích OOP trong Java: Class, Object, Inheritance', author: 'Nguyễn Văn A', subject: 'Lập Trình Cơ Bản', votes: 45, comments: 12, status: 'active', isSolved: true, createdAt: '09/05/2026' },
-  { id: '2', title: 'React Hooks: useState, useEffect, useContext', author: 'Trần Thị B', subject: 'Web Development', votes: 67, comments: 23, status: 'active', isSolved: false, createdAt: '08/05/2026' },
-  { id: '3', title: 'SQL: JOIN, Subquery, và Optimization', author: 'Phạm Minh D', subject: 'Cơ Sở Dữ Liệu', votes: 56, comments: 15, status: 'active', isSolved: false, createdAt: '07/05/2026' },
-  { id: '4', title: 'Cấu trúc dữ liệu: Stack và Queue', author: 'Lê Văn C', subject: 'CTDL', votes: 34, comments: 8, status: 'reported', isSolved: true, createdAt: '06/05/2026' },
-  { id: '5', title: 'Git & GitHub: Quản lý phiên bản hiệu quả', author: 'Hoàng Anh E', subject: 'DevOps', votes: 78, comments: 31, status: 'active', isSolved: true, createdAt: '05/05/2026' },
-];
+const POSTS = MOCK_QUESTIONS.map((q) => ({
+  id: q.id,
+  title: q.title,
+  author: q.author,
+  subject: q.subject ?? '',
+  votes: q.votes,
+  comments: q.comments,
+  status: q.status ?? 'active',
+  isSolved: q.isSolved ?? false,
+  createdAt: q.createdAt ?? '',
+}));
 
 export default function AdminPosts() {
   const [posts, setPosts] = useState(POSTS);

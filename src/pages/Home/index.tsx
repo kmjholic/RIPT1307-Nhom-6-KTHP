@@ -3,28 +3,10 @@ import { Button, Space } from 'antd';
 import { ArrowRightOutlined, RightOutlined } from '@ant-design/icons';
 import { history } from '@umijs/max';
 import PostCard from '@/components/PostCard';
+import { MOCK_QUESTIONS } from '@/server/seed/questions';
 import styles from './index.less';
 
-const mockPosts = [
-  {
-    id: '1', title: 'Giải thích OOP trong Java: Class, Object, Inheritance',
-    excerpt: 'OOP là nền tảng của Java. Trong bài viết này, tôi sẽ giải thích chi tiết về các khái niệm cốt lõi như Class, Object, Inheritance và cách sử dụng chúng...',
-    author: 'Nguyễn Văn A', tags: ['Java', 'OOP', 'Lập Trình'],
-    votes: 45, comments: 12, views: 523, timestamp: '2 giờ trước', subject: 'Lập Trình Cơ Bản', isSolved: true,
-  },
-  {
-    id: '2', title: 'React Hooks: useState, useEffect, useContext - Hướng dẫn đầy đủ',
-    excerpt: 'React Hooks là một cách mới để viết components trong React. Bài viết này sẽ hướng dẫn bạn cách sử dụng các hooks phổ biến nhất...',
-    author: 'Trần Thị B', tags: ['React', 'JavaScript', 'Web Development'],
-    votes: 67, comments: 23, views: 892, timestamp: '5 giờ trước', subject: 'Web Development', isSolved: false,
-  },
-  {
-    id: '3', title: 'SQL: JOIN, Subquery, và Optimization khi làm việc với big data',
-    excerpt: 'JOIN là một trong những khái niệm quan trọng nhất trong SQL. Bài viết này sẽ giáo dạy bạn cách tối ưu query...',
-    author: 'Phạm Minh D', tags: ['SQL', 'Database', 'Optimization'],
-    votes: 56, comments: 15, views: 734, timestamp: '2 ngày trước', subject: 'Cơ Sở Dữ Liệu', isSolved: true,
-  },
-];
+const mockPosts = MOCK_QUESTIONS.slice(0, 3);
 
 const stats = [
   { value: '10.000+', label: 'Câu Hỏi', icon: '❓', color: '#dc2626' },

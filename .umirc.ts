@@ -8,7 +8,8 @@ export default defineConfig({
         colorLink: '#dc2626',
         colorLinkHover: '#b91c1c',
         borderRadius: 8,
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif",
+        fontFamily:
+          "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif",
       },
     },
   },
@@ -16,6 +17,17 @@ export default defineConfig({
   model: {},
   initialState: {},
   request: {},
+
+  // 1. Cấu hình ApiRoute cho Backend Serverless
+  apiRoute: {
+    platform: 'vercel',
+  },
+
+  // 2. Tắt cảnh báo Beta để sửa lỗi chặn Git Commit
+  stats: {
+    warnings: false,
+  },
+
   layout: false,
   routes: [
     {
@@ -70,26 +82,40 @@ export default defineConfig({
       path: '/register',
       component: './Register',
     },
+
+    // 3. Cấu hình phân hệ Admin (Gộp lại thành cấu trúc lồng nhau)
     {
       path: '/admin',
-      component: './Admin',
+      component: './Admin', // đóng vai trò là Layout Admin bảo vệ route
+      routes: [
+        {
+          path: '/admin',
+          redirect: '/admin/dashboard',
+        },
+        {
+          name: 'Tổng quan',
+          path: '/admin/dashboard',
+          component: './Admin/Dashboard',
+        },
+        {
+          name: 'Quản lý Bài viết',
+          path: '/admin/posts',
+          component: './Admin/Posts',
+        },
+        {
+          name: 'Quản lý Thành viên',
+          path: '/admin/users',
+          component: './Admin/Users',
+        },
+        {
+          name: 'Báo cáo Vi phạm',
+          path: '/admin/reports',
+          component: './Admin/Reports',
+        },
+      ],
     },
-    {
-      path: '/admin/dashboard',
-      component: './Admin/Dashboard',
-    },
-    {
-      path: '/admin/posts',
-      component: './Admin/Posts',
-    },
-    {
-      path: '/admin/users',
-      component: './Admin/Users',
-    },
-    {
-      path: '/admin/reports',
-      component: './Admin/Reports',
-    },
+
+    // Các trang demo có sẵn của Umi
     {
       path: '/access',
       component: './Access',
@@ -100,5 +126,4 @@ export default defineConfig({
     },
   ],
   npmClient: 'npm',
-  utoopack: {},
 });

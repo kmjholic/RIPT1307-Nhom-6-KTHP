@@ -6,16 +6,19 @@ import {
   TrophyOutlined, FireOutlined,
 } from '@ant-design/icons';
 import { history } from '@umijs/max';
+import { MOCK_ADMIN_USERS } from '@/server/seed/users';
 import styles from './index.less';
 
-const USERS = [
-  { id: '1', name: 'Nguyễn Văn A', email: 'a@student.ptit.edu.vn', role: 'student', rep: 450, posts: 12, status: 'active', joinDate: '15/09/2024' },
-  { id: '2', name: 'Trần Thị Hương', email: 'huong@student.ptit.edu.vn', role: 'student', rep: 1250, posts: 28, status: 'active', joinDate: '01/09/2024' },
-  { id: '3', name: 'PGS.TS Lê Minh Đức', email: 'duc@ptit.edu.vn', role: 'teacher', rep: 5430, posts: 85, status: 'active', joinDate: '15/06/2023' },
-  { id: '4', name: 'Hoàng Văn Bình', email: 'binh@student.ptit.edu.vn', role: 'student', rep: 980, posts: 35, status: 'banned', joinDate: '20/09/2024' },
-  { id: '5', name: 'Nguyễn Minh Châu', email: 'chau@ptit.edu.vn', role: 'teacher', rep: 870, posts: 42, status: 'active', joinDate: '01/08/2023' },
-  { id: '6', name: 'Phạm Thị Lan', email: 'lan@student.ptit.edu.vn', role: 'student', rep: 320, posts: 8, status: 'active', joinDate: '05/10/2024' },
-];
+const USERS = MOCK_ADMIN_USERS.map((u) => ({
+  id: u.id,
+  name: u.name,
+  email: u.email,
+  role: u.role,
+  rep: u.reputation,
+  posts: u.posts,
+  status: u.status ?? 'active',
+  joinDate: u.joinDate,
+}));
 
 const ROLE_COLORS: Record<string, string> = {
   student: 'blue', teacher: 'purple', admin: 'red',

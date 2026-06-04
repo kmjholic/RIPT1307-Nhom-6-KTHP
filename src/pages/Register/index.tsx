@@ -11,6 +11,7 @@ import {
 import { UserOutlined, LockOutlined, MailOutlined, IdcardOutlined } from '@ant-design/icons';
 import { history } from '@umijs/max';
 import { useState } from 'react';
+import { authUtils } from '@/utils/auth';
 import styles from './index.less';
 
 export default function Register() {
@@ -26,12 +27,18 @@ export default function Register() {
 
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      message.success('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản');
+      await authUtils.register({
+        name: values.fullName,
+        email: values.email,
+        password: values.password,
+        role: values.role,
+        department: values.department,
+        studentId: values.studentId,
+      });
+      message.success('Đăng ký thành công!');
       setTimeout(() => {
-        history.push('/login');
-      }, 2000);
+        history.push('/home');
+      }, 800);
     } catch (error) {
       message.error('Đã xảy ra lỗi, vui lòng thử lại');
     } finally {
