@@ -206,9 +206,9 @@ Bạn có thể:
                 <Select
                   size="large"
                   options={[
-                    { label: '🟢 Dễ', value: 'easy' },
-                    { label: '🟡 Trung Bình', value: 'medium' },
-                    { label: '🔴 Khó', value: 'hard' },
+                    { label: 'Dễ', value: 'easy' },
+                    { label: 'Trung Bình', value: 'medium' },
+                    { label: 'Khó', value: 'hard' },
                   ]}
                 />
               </Form.Item>

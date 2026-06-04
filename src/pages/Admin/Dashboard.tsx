@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Col, Card, Statistic, Progress, Badge } from 'antd';
 import {
-  UsersOutlined, FileTextOutlined, CommentOutlined,
+  TeamOutlined, FileTextOutlined, CommentOutlined,
   ArrowUpOutlined, FireOutlined, TrophyOutlined,
 } from '@ant-design/icons';
 import styles from './index.less';
@@ -19,16 +19,16 @@ const topTags = [
 ];
 
 const recentActivity = [
-  { user: 'Nguyễn Văn A', action: 'đăng bài "Giải thích OOP trong Java"', time: '10 phút trước', emoji: '📝' },
-  { user: 'Trần Thị B', action: 'bình luận trên bài "React Hooks"', time: '25 phút trước', emoji: '💬' },
-  { user: 'Lê Văn C', action: 'đăng ký tài khoản mới', time: '1 giờ trước', emoji: '👤' },
-  { user: 'Phạm Minh D', action: 'vote bài "SQL Optimization"', time: '2 giờ trước', emoji: '👍' },
-  { user: 'PGS.TS Lê Minh Đức', action: 'chọn câu trả lời hay nhất', time: '3 giờ trước', emoji: '✅' },
+  { user: 'Nguyễn Văn A', action: 'đăng bài "Giải thích OOP trong Java"', time: '10 phút trước' },
+  { user: 'Trần Thị B', action: 'bình luận trên bài "React Hooks"', time: '25 phút trước' },
+  { user: 'Lê Văn C', action: 'đăng ký tài khoản mới', time: '1 giờ trước' },
+  { user: 'Phạm Minh D', action: 'vote bài "SQL Optimization"', time: '2 giờ trước' },
+  { user: 'PGS.TS Lê Minh Đức', action: 'chọn câu trả lời hay nhất', time: '3 giờ trước' },
 ];
 
 export default function AdminDashboard() {
   const keyStats = [
-    { title: 'Tổng Người Dùng', value: 1250, icon: <UsersOutlined />, color: '#3b82f6', trend: '+12%', up: true },
+    { title: 'Tổng Người Dùng', value: 1250, icon: <TeamOutlined />, color: '#3b82f6', trend: '+12%', up: true },
     { title: 'Tổng Bài Viết', value: 485, icon: <FileTextOutlined />, color: '#dc2626', trend: '+8%', up: true },
     { title: 'Bài Hôm Nay', value: 23, icon: <FireOutlined />, color: '#10b981', trend: '+5 so với hôm qua', up: true },
     { title: 'Bình Luận Mới', value: 156, icon: <CommentOutlined />, color: '#f59e0b', trend: '+23%', up: true },
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
   return (
     <div className={styles.adminDashboard}>
       <div className={styles.dashboardHeader}>
-        <h1>📊 Bảng Điều Khiển</h1>
+        <h1>Bảng Điều Khiển</h1>
         <p>Chào mừng trở lại! Đây là tổng quan hệ thống hôm nay.</p>
       </div>
 
@@ -64,7 +64,7 @@ export default function AdminDashboard() {
       <div className={styles.chartsRow}>
         {/* Activity Chart */}
         <div className={styles.chartCard}>
-          <div className={styles.chartTitle}>📈 Bài Viết Theo Ngày</div>
+          <div className={styles.chartTitle}>Bài Viết Theo Ngày</div>
           <div className={styles.barChart}>
             {activityData.map((val, i) => (
               <div key={i} className={styles.barItem}>
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
 
         {/* Top Tags */}
         <div className={styles.chartCard}>
-          <div className={styles.chartTitle}>🏷️ Tags Phổ Biến Nhất</div>
+          <div className={styles.chartTitle}>Tags Phổ Biến Nhất</div>
           <div className={styles.topTagsList}>
             {topTags.map((tag, i) => (
               <div key={i} className={styles.topTagItem}>
@@ -109,11 +109,10 @@ export default function AdminDashboard() {
 
       {/* Activity Feed */}
       <div className={styles.activityCard}>
-        <div className={styles.chartTitle}>⚡ Hoạt Động Gần Đây</div>
+        <div className={styles.chartTitle}>Hoạt Động Gần Đây</div>
         <div className={styles.activityList}>
           {recentActivity.map((item, i) => (
             <div key={i} className={styles.activityItem}>
-              <span className={styles.activityEmoji}>{item.emoji}</span>
               <div className={styles.activityContent}>
                 <span className={styles.activityUser}>{item.user}</span>
                 <span className={styles.activityAction}> {item.action}</span>
@@ -126,20 +125,20 @@ export default function AdminDashboard() {
 
       {/* Quick Actions */}
       <div className={styles.quickActions}>
-        <div className={styles.chartTitle}>⚡ Thao Tác Nhanh</div>
+        <div className={styles.chartTitle}>Thao Tác Nhanh</div>
         <div className={styles.quickActionsGrid}>
           {[
-            { label: 'Xem Báo Cáo', emoji: '⚠️', color: '#f59e0b', path: '/admin/reports' },
-            { label: 'Quản Lý User', emoji: '👥', color: '#3b82f6', path: '/admin/users' },
-            { label: 'Quản Lý Bài', emoji: '📝', color: '#10b981', path: '/admin/posts' },
-            { label: 'Xem Diễn Đàn', emoji: '💬', color: '#8b5cf6', path: '/forum' },
+            { label: 'Xem Báo Cáo', color: '#f59e0b', path: '/admin/reports' },
+            { label: 'Quản Lý User', color: '#3b82f6', path: '/admin/users' },
+            { label: 'Quản Lý Bài', color: '#10b981', path: '/admin/posts' },
+            { label: 'Xem Diễn Đàn', color: '#8b5cf6', path: '/forum' },
           ].map((action, i) => (
             <button
               key={i}
               className={styles.quickAction}
+              style={{ borderColor: action.color }}
               onClick={() => (window.location.href = action.path)}
             >
-              <span className={styles.quickActionEmoji}>{action.emoji}</span>
               <span className={styles.quickActionLabel}>{action.label}</span>
             </button>
           ))}

@@ -30,14 +30,14 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     time: '1 giờ trước', read: false, link: '/post/3',
   },
   {
-    id: '4', type: 'best_answer', title: '🏆 Câu trả lời hay nhất',
+    id: '4', type: 'best_answer', title: 'Câu trả lời hay nhất',
     message: 'Câu trả lời của bạn về Python được chọn là hay nhất!',
     time: '2 giờ trước', read: true, link: '/post/4',
   },
 ];
 
-const TYPE_ICONS: Record<string, string> = {
-  answer: '💬', vote: '👍', mention: '@', best_answer: '🏆',
+const TYPE_LABELS: Record<string, string> = {
+  answer: 'TL', vote: 'VT', mention: '@', best_answer: 'BA',
 };
 
 interface Props {
@@ -79,7 +79,7 @@ export default function NotificationDropdown({ open, onOpenChange }: Props) {
               onClick={() => { markRead(notif.id); window.location.href = notif.link; }}
             >
               <div className={`${styles.icon} ${styles[notif.type]}`}>
-                {TYPE_ICONS[notif.type]}
+                {TYPE_LABELS[notif.type]}
               </div>
               <div className={styles.content}>
                 <div className={styles.itemTitle}>{notif.title}</div>

@@ -41,9 +41,9 @@ export default function AdminPosts() {
         <div className={styles.postCell}>
           <div className={styles.postTitle}>{record.title}</div>
           <div className={styles.postMeta}>
-            <span>👤 {record.author}</span>
-            <span>📚 {record.subject}</span>
-            <span>📅 {record.createdAt}</span>
+            <span>{record.author}</span>
+            <span>{record.subject}</span>
+            <span>{record.createdAt}</span>
           </div>
         </div>
       ),
@@ -53,8 +53,8 @@ export default function AdminPosts() {
       key: 'stats',
       render: (record: any) => (
         <Space direction="vertical" size={2}>
-          <span>👍 {record.votes} vote</span>
-          <span>💬 {record.comments} bình luận</span>
+          <span>{record.votes} vote</span>
+          <span>{record.comments} bình luận</span>
         </Space>
       ),
     },
@@ -65,9 +65,9 @@ export default function AdminPosts() {
         <Space direction="vertical" size={4}>
           <Badge
             status={record.status === 'active' ? 'success' : record.status === 'reported' ? 'warning' : 'default'}
-            text={record.status === 'active' ? 'Đang Hoạt Động' : record.status === 'reported' ? '⚠️ Bị Báo Cáo' : 'Ẩn'}
+            text={record.status === 'active' ? 'Đang Hoạt Động' : record.status === 'reported' ? 'Bị Báo Cáo' : 'Ẩn'}
           />
-          {record.isSolved && <Tag color="green">✅ Đã Giải Quyết</Tag>}
+          {record.isSolved && <Tag color="green">Đã Giải Quyết</Tag>}
         </Space>
       ),
     },
@@ -96,17 +96,16 @@ export default function AdminPosts() {
 
   return (
     <div className={styles.adminSection}>
-      <h2 className={styles.sectionTitle}>📝 Quản Lý Bài Viết</h2>
+      <h2 className={styles.sectionTitle}>Quản Lý Bài Viết</h2>
 
       <div className={styles.miniStats}>
         {[
-          { label: 'Tổng Bài Viết', value: posts.length, icon: '📝', color: '#3b82f6' },
-          { label: 'Đang Hoạt Động', value: posts.filter((p) => p.status === 'active').length, icon: '✅', color: '#10b981' },
-          { label: 'Bị Báo Cáo', value: posts.filter((p) => p.status === 'reported').length, icon: '⚠️', color: '#f59e0b' },
-          { label: 'Đã Giải Quyết', value: posts.filter((p) => p.isSolved).length, icon: '🏆', color: '#8b5cf6' },
+          { label: 'Tổng Bài Viết', value: posts.length, color: '#3b82f6' },
+          { label: 'Đang Hoạt Động', value: posts.filter((p) => p.status === 'active').length, color: '#10b981' },
+          { label: 'Bị Báo Cáo', value: posts.filter((p) => p.status === 'reported').length, color: '#f59e0b' },
+          { label: 'Đã Giải Quyết', value: posts.filter((p) => p.isSolved).length, color: '#8b5cf6' },
         ].map((s, i) => (
           <div key={i} className={styles.miniStat}>
-            <span className={styles.miniStatIcon}>{s.icon}</span>
             <div>
               <div className={styles.miniStatValue} style={{ color: s.color }}>{s.value}</div>
               <div className={styles.miniStatLabel}>{s.label}</div>
@@ -128,8 +127,8 @@ export default function AdminPosts() {
           onChange={setStatusFilter}
           options={[
             { label: 'Tất Cả', value: 'all' },
-            { label: '✅ Đang Hoạt Động', value: 'active' },
-            { label: '⚠️ Bị Báo Cáo', value: 'reported' },
+            { label: 'Đang Hoạt Động', value: 'active' },
+            { label: 'Bị Báo Cáo', value: 'reported' },
           ]}
           style={{ width: 180 }}
         />

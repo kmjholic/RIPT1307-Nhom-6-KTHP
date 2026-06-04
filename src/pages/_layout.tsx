@@ -1,7 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Layout, Drawer, Button } from 'antd';
 import { Outlet, useLocation, history } from '@umijs/max';
-import { MenuOutlined } from '@ant-design/icons';
+import {
+  MenuOutlined,
+  HomeOutlined,
+  CommentOutlined,
+  EditOutlined,
+  TagsOutlined,
+  TrophyOutlined,
+} from '@ant-design/icons';
 
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
@@ -11,53 +18,24 @@ import '@/styles/variables.less';
 
 const { Content } = Layout;
 
-// Pages không hiện sidebar
 const FULL_WIDTH_PAGES = ['/login', '/register'];
 
 export default function AppLayout() {
   const location = useLocation();
-
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    return (
-      (localStorage.getItem('forum_theme') as 'light' | 'dark') ||
-      'light'
-    );
-  });
-
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('forum_theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
-  };
-
-  // Chỉ check exact path
   const isFullWidth = FULL_WIDTH_PAGES.includes(location.pathname);
 
   return (
-    <div
-      className={`${styles.appWrapper} ${
-        theme === 'dark' ? styles.darkMode : ''
-      }`}
-      data-theme={theme}
-    >
-      {/* HEADER */}
-      <Header onToggleTheme={toggleTheme} theme={theme} />
+    <div className={styles.appWrapper}>
+      <Header />
 
       <Layout className={styles.mainLayout}>
-        {/* SIDEBAR */}
         {!isFullWidth && (
           <>
-            {/* Desktop Sidebar */}
             <aside className={styles.desktopSidebar}>
               <Sidebar />
             </aside>
 
-            {/* Mobile Button */}
             <Button
               className={styles.mobileSidebarToggle}
               icon={<MenuOutlined />}
@@ -66,7 +44,6 @@ export default function AppLayout() {
               danger
             />
 
-            {/* Mobile Drawer */}
             <Drawer
               placement="left"
               open={mobileDrawerOpen}
@@ -80,7 +57,6 @@ export default function AppLayout() {
           </>
         )}
 
-        {/* PAGE CONTENT */}
         <Content
           className={`${styles.content} ${
             isFullWidth ? styles.fullWidth : ''
@@ -90,13 +66,12 @@ export default function AppLayout() {
         </Content>
       </Layout>
 
-      {/* MOBILE NAV */}
       <nav className={styles.mobileBottomNav}>
         <button
           className={styles.navItem}
           onClick={() => history.push('/home')}
         >
-          <span>🏠</span>
+          <HomeOutlined />
           <span>Trang Chủ</span>
         </button>
 
@@ -104,7 +79,7 @@ export default function AppLayout() {
           className={styles.navItem}
           onClick={() => history.push('/forum')}
         >
-          <span>💬</span>
+          <CommentOutlined />
           <span>Diễn Đàn</span>
         </button>
 
@@ -112,7 +87,7 @@ export default function AppLayout() {
           className={`${styles.navItem} ${styles.navItemCenter}`}
           onClick={() => history.push('/post/new')}
         >
-          <span>✏️</span>
+          <EditOutlined />
           <span>Đăng</span>
         </button>
 
@@ -120,7 +95,7 @@ export default function AppLayout() {
           className={styles.navItem}
           onClick={() => history.push('/tags')}
         >
-          <span>🏷️</span>
+          <TagsOutlined />
           <span>Thẻ</span>
         </button>
 
@@ -128,7 +103,7 @@ export default function AppLayout() {
           className={styles.navItem}
           onClick={() => history.push('/leaderboard')}
         >
-          <span>🏆</span>
+          <TrophyOutlined />
           <span>Xếp Hạng</span>
         </button>
       </nav>

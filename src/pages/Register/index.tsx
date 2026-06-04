@@ -3,11 +3,10 @@ import {
   Input,
   Button,
   Select,
-  Divider,
-  Space,
   message,
   Checkbox,
 } from 'antd';
+import { BookOutlined, RocketOutlined, RiseOutlined, TrophyOutlined } from '@ant-design/icons';
 import { UserOutlined, LockOutlined, MailOutlined, IdcardOutlined } from '@ant-design/icons';
 import { history } from '@umijs/max';
 import { useState } from 'react';
@@ -51,22 +50,22 @@ export default function Register() {
       <div className={styles.container}>
         {/* Left Side - Info */}
         <div className={styles.leftSide}>
-          <div className={styles.logo}>📚 Trang</div>
+          <div className={styles.logo}><BookOutlined /> EduForum</div>
           <h1 className={styles.title}>Gia Nhập Cộng Đồng</h1>
           <p className={styles.subtitle}>
             Bắt đầu hành trình học tập của bạn ngay hôm nay
           </p>
           <div className={styles.features}>
             <div className={styles.feature}>
-              <span className={styles.icon}>🚀</span>
+              <RocketOutlined className={styles.icon} />
               <span>Đặt câu hỏi và nhận câu trả lời từ chuyên gia</span>
             </div>
             <div className={styles.feature}>
-              <span className={styles.icon}>📈</span>
+              <RiseOutlined className={styles.icon} />
               <span>Xây dựng kiến thức lập trình bền vững</span>
             </div>
             <div className={styles.feature}>
-              <span className={styles.icon}>🏆</span>
+              <TrophyOutlined className={styles.icon} />
               <span>Kiếm điểm uy tín và sách sẽ</span>
             </div>
           </div>
@@ -160,14 +159,8 @@ export default function Register() {
                   size="large"
                   onChange={setRole}
                   options={[
-                    {
-                      label: '👨‍🎓 Sinh viên',
-                      value: 'student',
-                    },
-                    {
-                      label: '👨‍🏫 Giảng viên',
-                      value: 'teacher',
-                    },
+                    { label: 'Sinh viên', value: 'student' },
+                    { label: 'Giảng viên', value: 'teacher' },
                   ]}
                   className={styles.input}
                 />
@@ -285,17 +278,6 @@ export default function Register() {
                 </Button>
               </Form.Item>
             </Form>
-
-            <Divider>Hoặc</Divider>
-
-            <Space size="middle" className={styles.socialRegister}>
-              <Button size="large" block>
-                Google
-              </Button>
-              <Button size="large" block>
-                GitHub
-              </Button>
-            </Space>
 
             <div className={styles.footer}>
               <span>Đã có tài khoản? </span>

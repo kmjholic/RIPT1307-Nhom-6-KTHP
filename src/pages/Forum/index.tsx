@@ -17,11 +17,11 @@ import styles from './index.less';
 const mockPosts = MOCK_QUESTIONS;
 
 const topContributors = [
-  { id: '3', name: 'PGS.TS Lê Minh Đức', role: 'teacher', rep: 5430, emoji: '🏆' },
-  { id: '2', name: 'Trần Thị Hương', role: 'student', rep: 1250, emoji: '⭐' },
-  { id: '4', name: 'Hoàng Văn Bình', role: 'student', rep: 980, emoji: '⭐' },
-  { id: '5', name: 'Nguyễn Minh Châu', role: 'teacher', rep: 870, emoji: '🤝' },
-  { id: '6', name: 'Lê Thị Lan', role: 'student', rep: 654, emoji: '🤝' },
+  { id: '3', name: 'PGS.TS Lê Minh Đức', role: 'teacher', rep: 5430 },
+  { id: '2', name: 'Trần Thị Hương', role: 'student', rep: 1250 },
+  { id: '4', name: 'Hoàng Văn Bình', role: 'student', rep: 980 },
+  { id: '5', name: 'Nguyễn Minh Châu', role: 'teacher', rep: 870 },
+  { id: '6', name: 'Lê Thị Lan', role: 'student', rep: 654 },
 ];
 
 const trendingTags = [
@@ -141,11 +141,10 @@ export default function Forum() {
                   <div className={styles.contributorInfo}>
                     <div className={styles.contributorName}>{user.name}</div>
                     <div className={styles.contributorRole}>
-                      {user.role === 'teacher' ? '👨‍🏫 Giảng viên' : '👨‍🎓 Sinh viên'}
+                      {user.role === 'teacher' ? 'Giảng viên' : 'Sinh viên'}
                     </div>
                   </div>
                   <div className={styles.contributorRep}>
-                    <span>{user.emoji}</span>
                     <span>{user.rep.toLocaleString()}</span>
                   </div>
                 </div>
@@ -181,13 +180,12 @@ export default function Forum() {
             </div>
             <div className={styles.activityList}>
               {[
-                { user: 'Nguyễn Văn A', action: 'đã đặt câu hỏi', time: '5 phút trước', emoji: '❓' },
-                { user: 'Trần Thị B', action: 'đã trả lời', time: '12 phút trước', emoji: '💬' },
-                { user: 'Lê Văn C', action: 'đã upvote', time: '20 phút trước', emoji: '👍' },
-                { user: 'PGS.TS Lê Minh Đức', action: 'đã chọn best answer', time: '1 giờ trước', emoji: '✅' },
+                { user: 'Nguyễn Văn A', action: 'đã đặt câu hỏi', time: '5 phút trước' },
+                { user: 'Trần Thị B', action: 'đã trả lời', time: '12 phút trước' },
+                { user: 'Lê Văn C', action: 'đã upvote', time: '20 phút trước' },
+                { user: 'PGS.TS Lê Minh Đức', action: 'đã chọn best answer', time: '1 giờ trước' },
               ].map((act, i) => (
                 <div key={i} className={styles.activityItem}>
-                  <span className={styles.activityEmoji}>{act.emoji}</span>
                   <div>
                     <span className={styles.activityUser}>{act.user}</span>
                     <span className={styles.activityAction}> {act.action}</span>

@@ -23,15 +23,15 @@ export const MOCK_TAGS: Tag[] = [
   { name: 'MongoDB', count: 35, color: '#15803d', category: 'database', desc: 'Cơ sở dữ liệu NoSQL' },
 ];
 
-export const TAG_CATEGORIES: { key: string; label: string; emoji: string }[] = [
-  { key: 'all', label: 'Tất Cả', emoji: '🏷️' },
-  { key: 'language', label: 'Ngôn Ngữ', emoji: '💻' },
-  { key: 'framework', label: 'Framework', emoji: '🛠️' },
-  { key: 'subject', label: 'Môn Học', emoji: '📚' },
-  { key: 'database', label: 'Database', emoji: '🗄️' },
-  { key: 'field', label: 'Lĩnh Vực', emoji: '🎯' },
-  { key: 'tool', label: 'Công Cụ', emoji: '⚙️' },
-  { key: 'concept', label: 'Khái Niệm', emoji: '💡' },
+export const TAG_CATEGORIES: { key: string; label: string }[] = [
+  { key: 'all', label: 'Tất Cả' },
+  { key: 'language', label: 'Ngôn Ngữ' },
+  { key: 'framework', label: 'Framework' },
+  { key: 'subject', label: 'Môn Học' },
+  { key: 'database', label: 'Database' },
+  { key: 'field', label: 'Lĩnh Vực' },
+  { key: 'tool', label: 'Công Cụ' },
+  { key: 'concept', label: 'Khái Niệm' },
 ];
 
 export type { TagCategory };

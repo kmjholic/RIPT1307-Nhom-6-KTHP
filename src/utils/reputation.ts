@@ -1,6 +1,5 @@
 export interface ReputationLevel {
   name: string;
-  emoji: string;
   minPoints: number;
   maxPoints: number;
   color: string;
@@ -10,7 +9,6 @@ export interface ReputationLevel {
 export const REPUTATION_LEVELS: ReputationLevel[] = [
   {
     name: 'Người Mới',
-    emoji: '🆕',
     minPoints: 0,
     maxPoints: 99,
     color: '#6b7280',
@@ -18,7 +16,6 @@ export const REPUTATION_LEVELS: ReputationLevel[] = [
   },
   {
     name: 'Đóng Góp Viên',
-    emoji: '🤝',
     minPoints: 100,
     maxPoints: 499,
     color: '#3b82f6',
@@ -26,7 +23,6 @@ export const REPUTATION_LEVELS: ReputationLevel[] = [
   },
   {
     name: 'Chuyên Gia',
-    emoji: '⭐',
     minPoints: 500,
     maxPoints: 1999,
     color: '#f59e0b',
@@ -34,7 +30,6 @@ export const REPUTATION_LEVELS: ReputationLevel[] = [
   },
   {
     name: 'Cố Vấn',
-    emoji: '🏆',
     minPoints: 2000,
     maxPoints: Infinity,
     color: '#dc2626',
@@ -45,7 +40,6 @@ export const REPUTATION_LEVELS: ReputationLevel[] = [
 export interface Badge {
   id: string;
   name: string;
-  emoji: string;
   description: string;
   color: string;
   rarity: 'common' | 'uncommon' | 'rare' | 'legendary';
@@ -55,7 +49,6 @@ export const BADGES: Record<string, Badge> = {
   newcomer: {
     id: 'newcomer',
     name: 'Người Mới',
-    emoji: '🌱',
     description: 'Đặt câu hỏi đầu tiên',
     color: '#10b981',
     rarity: 'common',
@@ -63,7 +56,6 @@ export const BADGES: Record<string, Badge> = {
   'first-question': {
     id: 'first-question',
     name: 'Câu Hỏi Đầu Tiên',
-    emoji: '❓',
     description: 'Đăng câu hỏi đầu tiên',
     color: '#3b82f6',
     rarity: 'common',
@@ -71,7 +63,6 @@ export const BADGES: Record<string, Badge> = {
   helpful: {
     id: 'helpful',
     name: 'Hỗ Trợ Tích Cực',
-    emoji: '💡',
     description: 'Có 10 câu trả lời được chọn là tốt nhất',
     color: '#f59e0b',
     rarity: 'uncommon',
@@ -79,7 +70,6 @@ export const BADGES: Record<string, Badge> = {
   '100-votes': {
     id: '100-votes',
     name: '100 Lượt Ủng Hộ',
-    emoji: '👍',
     description: 'Nhận được 100 lượt upvote',
     color: '#8b5cf6',
     rarity: 'uncommon',
@@ -87,7 +77,6 @@ export const BADGES: Record<string, Badge> = {
   expert: {
     id: 'expert',
     name: 'Chuyên Gia',
-    emoji: '⭐',
     description: 'Đạt 500 điểm uy tín',
     color: '#f59e0b',
     rarity: 'rare',
@@ -95,7 +84,6 @@ export const BADGES: Record<string, Badge> = {
   'top-contributor': {
     id: 'top-contributor',
     name: 'Người Đóng Góp Hàng Đầu',
-    emoji: '🏅',
     description: 'Top 10 người đóng góp trong tháng',
     color: '#dc2626',
     rarity: 'rare',
@@ -103,7 +91,6 @@ export const BADGES: Record<string, Badge> = {
   advisor: {
     id: 'advisor',
     name: 'Cố Vấn',
-    emoji: '🏆',
     description: 'Đạt 2000 điểm uy tín',
     color: '#dc2626',
     rarity: 'legendary',
@@ -111,7 +98,6 @@ export const BADGES: Record<string, Badge> = {
   teacher: {
     id: 'teacher',
     name: 'Giảng Viên',
-    emoji: '👨‍🏫',
     description: 'Giảng viên được xác minh',
     color: '#6366f1',
     rarity: 'uncommon',
@@ -119,7 +105,6 @@ export const BADGES: Record<string, Badge> = {
   admin: {
     id: 'admin',
     name: 'Quản Trị Viên',
-    emoji: '⚙️',
     description: 'Quản trị viên hệ thống',
     color: '#111827',
     rarity: 'legendary',

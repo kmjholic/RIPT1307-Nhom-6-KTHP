@@ -25,7 +25,7 @@ const ROLE_COLORS: Record<string, string> = {
 };
 
 const ROLE_LABELS: Record<string, string> = {
-  student: '👨‍🎓 Sinh viên', teacher: '👨‍🏫 Giảng viên', admin: '⚙️ Admin',
+  student: 'Sinh viên', teacher: 'Giảng viên', admin: 'Admin',
 };
 
 export default function AdminUsers() {
@@ -72,7 +72,7 @@ export default function AdminUsers() {
       dataIndex: 'rep',
       key: 'rep',
       sorter: (a: any, b: any) => b.rep - a.rep,
-      render: (rep: number) => <span className={styles.repScore}>⭐ {rep.toLocaleString('vi')}</span>,
+      render: (rep: number) => <span className={styles.repScore}>{rep.toLocaleString('vi')} pts</span>,
     },
     {
       title: 'Bài Viết',
@@ -120,21 +120,20 @@ export default function AdminUsers() {
   ];
 
   const stats = [
-    { label: 'Tổng Người Dùng', value: users.length, icon: '👥', color: '#3b82f6' },
-    { label: 'Sinh Viên', value: users.filter((u) => u.role === 'student').length, icon: '👨‍🎓', color: '#10b981' },
-    { label: 'Giảng Viên', value: users.filter((u) => u.role === 'teacher').length, icon: '👨‍🏫', color: '#8b5cf6' },
-    { label: 'Đã Khóa', value: users.filter((u) => u.status === 'banned').length, icon: '🔒', color: '#ef4444' },
+    { label: 'Tổng Người Dùng', value: users.length, color: '#3b82f6' },
+    { label: 'Sinh Viên', value: users.filter((u) => u.role === 'student').length, color: '#10b981' },
+    { label: 'Giảng Viên', value: users.filter((u) => u.role === 'teacher').length, color: '#8b5cf6' },
+    { label: 'Đã Khóa', value: users.filter((u) => u.status === 'banned').length, color: '#ef4444' },
   ];
 
   return (
     <div className={styles.adminSection}>
-      <h2 className={styles.sectionTitle}>👥 Quản Lý Người Dùng</h2>
+      <h2 className={styles.sectionTitle}>Quản Lý Người Dùng</h2>
 
       {/* Stats */}
       <div className={styles.miniStats}>
         {stats.map((s, i) => (
           <div key={i} className={styles.miniStat}>
-            <span className={styles.miniStatIcon}>{s.icon}</span>
             <div>
               <div className={styles.miniStatValue} style={{ color: s.color }}>{s.value}</div>
               <div className={styles.miniStatLabel}>{s.label}</div>
@@ -157,8 +156,8 @@ export default function AdminUsers() {
           onChange={setRoleFilter}
           options={[
             { label: 'Tất Cả', value: 'all' },
-            { label: '👨‍🎓 Sinh Viên', value: 'student' },
-            { label: '👨‍🏫 Giảng Viên', value: 'teacher' },
+            { label: 'Sinh Viên', value: 'student' },
+            { label: 'Giảng Viên', value: 'teacher' },
           ]}
           style={{ width: 160 }}
         />

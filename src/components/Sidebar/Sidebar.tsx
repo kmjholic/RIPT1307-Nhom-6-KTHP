@@ -123,18 +123,18 @@ export default function Sidebar({ onClose }: SidebarProps) {
   ];
 
   const filterOptions = [
-    { key: 'newest', label: '⏰ Mới Nhất' },
-    { key: 'votes', label: '👍 Nhiều Vote' },
-    { key: 'hot', label: '🔥 Đang Hot' },
-    { key: 'unanswered', label: '❓ Chưa Trả Lời' },
-    { key: 'solved', label: '✅ Đã Giải Quyết' },
+    { key: 'newest', label: 'Mới Nhất' },
+    { key: 'votes', label: 'Nhiều Vote' },
+    { key: 'hot', label: 'Đang Hot' },
+    { key: 'unanswered', label: 'Chưa Trả Lời' },
+    { key: 'solved', label: 'Đã Giải Quyết' },
   ];
 
   return (
     <aside className={styles.sidebar}>
       {onClose && (
         <div className={styles.drawerHeader}>
-          <span className={styles.drawerTitle}>📚 EduForum</span>
+          <span className={styles.drawerTitle}>EduForum</span>
           <button className={styles.closeBtn} onClick={onClose}><CloseOutlined /></button>
         </div>
       )}
@@ -143,10 +143,10 @@ export default function Sidebar({ onClose }: SidebarProps) {
       {onClose && (
         <div className={styles.quickNav}>
           {[
-            { label: '🏠 Trang Chủ', path: '/home' },
-            { label: '💬 Diễn Đàn', path: '/forum' },
-            { label: '🏷️ Thẻ', path: '/tags' },
-            { label: '🏆 Xếp Hạng', path: '/leaderboard' },
+            { label: 'Trang Chủ', path: '/home' },
+            { label: 'Diễn Đàn', path: '/forum' },
+            { label: 'Thẻ', path: '/tags' },
+            { label: 'Xếp Hạng', path: '/leaderboard' },
           ].map((item) => (
             <button key={item.path} className={styles.quickNavBtn}
               onClick={() => { history.push(item.path); onClose(); }}>

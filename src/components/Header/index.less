@@ -13,7 +13,8 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 16px;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr minmax(280px, 540px) 1fr;
     align-items: center;
     gap: 16px;
   }
@@ -24,11 +25,12 @@
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  flex-shrink: 0;
+  justify-self: start;
   text-decoration: none;
 
   .logoIcon {
-    font-size: 24px;
+    font-size: 22px;
+    color: white;
   }
 
   .logoText {
@@ -48,9 +50,10 @@
   }
 }
 
-// Search
+// Search — căn giữa header
 .searchWrapper {
-  flex: 1;
+  justify-self: center;
+  width: 100%;
   max-width: 540px;
   position: relative;
 }
@@ -144,32 +147,12 @@
   }
 }
 
-// Actions
+// Actions — góc phải
 .actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-shrink: 0;
-}
-
-.themeToggle {
-  background: rgba(255, 255, 255, 15%);
-  border: 1px solid rgba(255, 255, 255, 20%);
-  border-radius: 50%;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: white;
-  font-size: 15px;
-  transition: all 0.2s;
-
-  &:hover {
-    background: rgba(255, 255, 255, 25%);
-    transform: rotate(15deg);
-  }
+  justify-self: end;
 }
 
 .askBtn {
@@ -199,23 +182,7 @@
 }
 
 .avatarWrapper {
-  position: relative;
   cursor: pointer;
-
-  .levelBadge {
-    position: absolute;
-    bottom: -4px;
-    right: -4px;
-    font-size: 12px;
-    background: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 20%);
-  }
 }
 
 // User menu

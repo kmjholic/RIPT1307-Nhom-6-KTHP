@@ -23,10 +23,6 @@ export default defineConfig({
     platform: 'vercel',
   },
 
-  // 2. Tắt cảnh báo Beta để sửa lỗi chặn Git Commit
-  stats: {
-    warnings: false,
-  },
 
   layout: false,
   routes: [
@@ -115,15 +111,6 @@ export default defineConfig({
       ],
     },
 
-    // Các trang demo có sẵn của Umi
-    {
-      path: '/access',
-      component: './Access',
-    },
-    {
-      path: '/table',
-      component: './Table',
-    },
   ],
   npmClient: 'npm',
 });

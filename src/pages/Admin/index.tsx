@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Outlet, history, useLocation } from '@umijs/max';
 import { Layout, Menu, Button, message } from 'antd';
 import {
-  HomeOutlined, FileTextOutlined, UsersOutlined,
+  HomeOutlined, FileTextOutlined, TeamOutlined,
   BarChartOutlined, LogoutOutlined, WarningOutlined,
 } from '@ant-design/icons';
 import { authUtils } from '@/utils/auth';
@@ -30,20 +30,20 @@ export default function Admin() {
   const menuItems = [
     { key: '/admin/dashboard', icon: <BarChartOutlined />, label: 'Dashboard', onClick: () => history.push('/admin/dashboard') },
     { key: '/admin/posts', icon: <FileTextOutlined />, label: 'Quản Lý Bài Viết', onClick: () => history.push('/admin/posts') },
-    { key: '/admin/users', icon: <UsersOutlined />, label: 'Quản Lý Người Dùng', onClick: () => history.push('/admin/users') },
+    { key: '/admin/users', icon: <TeamOutlined />, label: 'Quản Lý Người Dùng', onClick: () => history.push('/admin/users') },
     { key: '/admin/reports', icon: <WarningOutlined />, label: 'Báo Cáo Vi Phạm', onClick: () => history.push('/admin/reports') },
   ];
 
   return (
     <Layout className={styles.adminLayout}>
-      <Sider width={250} style={{ background: '#0f0606', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+      <Sider width={250} style={{ background: '#fff', borderRight: '1px solid #e5e7eb' }}>
         <div className={styles.logo}>
-          <span>📚 EduForum</span>
+          <span>EduForum</span>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>Admin Panel</div>
         </div>
 
         <Menu
-          theme="dark"
+          theme="light"
           mode="inline"
           selectedKeys={[location.pathname]}
           style={{ background: '#0f0606', border: 'none' }}
@@ -62,7 +62,7 @@ export default function Admin() {
             block style={{ marginTop: 8 }}
             onClick={() => history.push('/home')}
           >
-            🏠 Về Trang Chủ
+            Về Trang Chủ
           </Button>
         </div>
       </Sider>

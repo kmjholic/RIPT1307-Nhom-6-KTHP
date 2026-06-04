@@ -1,24 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Badge,
   Button,
   Dropdown,
   Space,
   Avatar,
-  Tooltip,
 } from 'antd';
 import {
   UserOutlined,
   LogoutOutlined,
   EditOutlined,
   SearchOutlined,
-  SunOutlined,
-  MoonOutlined,
   SettingOutlined,
   TrophyOutlined,
   HomeOutlined,
   FireOutlined,
   TagsOutlined,
+  BookOutlined,
 } from '@ant-design/icons';
 import { history, useLocation } from '@umijs/max';
 
@@ -27,11 +24,6 @@ import { getReputationLevel } from '@/utils/reputation';
 import NotificationDropdown from '@/components/NotificationDropdown';
 
 import styles from './index.less';
-
-interface HeaderProps {
-  onToggleTheme?: () => void;
-  theme?: 'light' | 'dark';
-}
 
 const SEARCH_SUGGESTIONS = [
   'OOP trong Java',
@@ -44,10 +36,7 @@ const SEARCH_SUGGESTIONS = [
   'Thuật toán sắp xếp',
 ];
 
-export default function Header({
-  onToggleTheme,
-  theme = 'light',
-}: HeaderProps) {
+export default function Header() {
   const location = useLocation();
 
   const [currentUser, setCurrentUser] = useState(
@@ -152,8 +141,6 @@ export default function Header({
 
             {repLevel && (
               <div className={styles.userRep}>
-                <span>{repLevel.emoji}</span>
-
                 <span style={{ color: repLevel.color }}>
                   {repLevel.name}
                 </span>
@@ -219,15 +206,13 @@ export default function Header({
 
   return (
     <header className={styles.header}>
-      {/* TOP BAR */}
       <div className={styles.topBar}>
         <div className={styles.container}>
-          {/* LOGO */}
           <div
             className={styles.logo}
             onClick={() => history.push('/')}
           >
-            <span className={styles.logoIcon}>📚</span>
+            <BookOutlined className={styles.logoIcon} />
 
             <span className={styles.logoText}>
               EduForum
@@ -235,7 +220,6 @@ export default function Header({
             </span>
           </div>
 
-          {/* SEARCH */}
           <div
             className={styles.searchWrapper}
             ref={searchRef}
@@ -280,7 +264,6 @@ export default function Header({
               )}
             </div>
 
-            {/* SEARCH SUGGESTIONS */}
             {showSuggestions &&
               filteredSuggestions.length > 0 && (
                 <div
@@ -308,37 +291,14 @@ export default function Header({
               )}
           </div>
 
-          {/* ACTIONS */}
           <div className={styles.actions}>
-            {/* THEME */}
-            <Tooltip
-              title={
-                theme === 'dark'
-                  ? 'Chế độ sáng'
-                  : 'Chế độ tối'
-              }
-            >
-              <button
-                className={styles.themeToggle}
-                onClick={onToggleTheme}
-              >
-                {theme === 'dark' ? (
-                  <SunOutlined />
-                ) : (
-                  <MoonOutlined />
-                )}
-              </button>
-            </Tooltip>
-
             {currentUser ? (
               <Space size="small">
-                {/* NOTIFICATION */}
                 <NotificationDropdown
                   open={notifOpen}
                   onOpenChange={setNotifOpen}
                 />
 
-                {/* ASK BUTTON */}
                 <Button
                   type="primary"
                   danger
@@ -351,7 +311,6 @@ export default function Header({
                   + Đặt Câu Hỏi
                 </Button>
 
-                {/* USER MENU */}
                 <Dropdown
                   menu={{ items: userMenuItems }}
                   trigger={['click']}
@@ -368,14 +327,6 @@ export default function Header({
                     >
                       {currentUser.name.charAt(0)}
                     </Avatar>
-
-                    {repLevel && (
-                      <span
-                        className={styles.levelBadge}
-                      >
-                        {repLevel.emoji}
-                      </span>
-                    )}
                   </div>
                 </Dropdown>
               </Space>
@@ -407,7 +358,6 @@ export default function Header({
         </div>
       </div>
 
-      {/* NAVBAR */}
       <nav className={styles.navBar}>
         <div className={styles.navContainer}>
           {navLinks.map((link) => {

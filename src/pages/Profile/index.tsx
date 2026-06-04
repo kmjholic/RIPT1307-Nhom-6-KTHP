@@ -3,7 +3,7 @@ import { Avatar, Button, Tabs, Tag, Progress, Tooltip } from 'antd';
 import {
   EditOutlined, MailOutlined, TrophyOutlined,
   FireOutlined, LikeOutlined, CalendarOutlined,
-  BookOutlined, MessageOutlined, BookmarkOutlined,
+  BookOutlined, MessageOutlined, StarOutlined,
 } from '@ant-design/icons';
 import { useParams, history } from '@umijs/max';
 import { getReputationLevel, getNextLevel, getProgressToNextLevel, getBadgesByIds } from '@/utils/reputation';
@@ -79,17 +79,16 @@ export default function Profile() {
       children: (
         <div className={styles.activityFeed}>
           {[
-            { icon: '💬', text: 'Đã trả lời "Cách dùng useEffect trong React"', time: '2 giờ trước', votes: 8 },
-            { icon: '✅', text: 'Câu trả lời về SQL JOIN được chọn hay nhất', time: '1 ngày trước', votes: 15 },
-            { icon: '💬', text: 'Đã trả lời "Phân biệt Stack và Queue"', time: '3 ngày trước', votes: 5 },
+            { text: 'Đã trả lời "Cách dùng useEffect trong React"', time: '2 giờ trước', votes: 8 },
+            { text: 'Câu trả lời về SQL JOIN được chọn hay nhất', time: '1 ngày trước', votes: 15 },
+            { text: 'Đã trả lời "Phân biệt Stack và Queue"', time: '3 ngày trước', votes: 5 },
           ].map((item, i) => (
             <div key={i} className={styles.activityItem}>
-              <span className={styles.activityIcon}>{item.icon}</span>
               <div className={styles.activityContent}>
                 <span className={styles.activityText}>{item.text}</span>
                 <div className={styles.activityMeta}>
                   <span>{item.time}</span>
-                  <span>👍 {item.votes} vote</span>
+                  <span>{item.votes} vote</span>
                 </div>
               </div>
             </div>
@@ -99,11 +98,11 @@ export default function Profile() {
     },
     {
       key: 'saved',
-      label: <span><BookmarkOutlined /> Đã Lưu</span>,
+      label: <span><StarOutlined /> Đã Lưu</span>,
       children: (
         <div className={styles.savedInfo}>
           <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}>📌</div>
+            <div className={styles.emptyIcon}>—</div>
             <p>Chưa có bài viết được lưu</p>
             <Button type="primary" danger onClick={() => history.push('/forum')}>
               Khám Phá Diễn Đàn
@@ -160,22 +159,22 @@ export default function Profile() {
             <Avatar size={100} className={styles.avatar}>
               {user.name.charAt(0)}
             </Avatar>
-            <div className={styles.levelEmoji}>{repLevel.emoji}</div>
+            <div className={styles.levelBadge} style={{ color: repLevel.color }}>{repLevel.name.charAt(0)}</div>
           </div>
 
           <div className={styles.profileInfo}>
             <div className={styles.nameRow}>
               <h1 className={styles.profileName}>{user.name}</h1>
               <span className={styles.roleTag}>
-                {user.role === 'teacher' ? '👨‍🏫 Giảng viên' : '👨‍🎓 Sinh viên'}
+                {user.role === 'teacher' ? 'Giảng viên' : 'Sinh viên'}
               </span>
             </div>
 
             <div className={styles.profileDetails}>
               <span><MailOutlined /> {user.email}</span>
-              <span>🏛️ {user.department}</span>
-              <span>📚 {user.major}</span>
-              <span>🪪 {user.studentId}</span>
+              <span>{user.department}</span>
+              <span>{user.major}</span>
+              <span>{user.studentId}</span>
               <span><CalendarOutlined /> Tham gia {user.joinDate}</span>
             </div>
 
@@ -214,12 +213,12 @@ export default function Profile() {
         <div className={styles.repSection}>
           <div className={styles.repHeader}>
             <div className={styles.repLevel}>
-              <span style={{ color: repLevel.color }}>{repLevel.emoji} {repLevel.name}</span>
+              <span style={{ color: repLevel.color }}>{repLevel.name}</span>
               <span className={styles.repPoints}>{user.reputation} pts</span>
             </div>
             {nextLevel && (
               <span className={styles.nextLevel}>
-                Cần <strong>{nextLevel.minPoints - user.reputation}</strong> pts để lên {nextLevel.emoji} {nextLevel.name}
+                Cần <strong>{nextLevel.minPoints - user.reputation}</strong> pts để lên {nextLevel.name}
               </span>
             )}
           </div>
@@ -235,12 +234,12 @@ export default function Profile() {
         {/* Badges */}
         {badges.length > 0 && (
           <div className={styles.badgesSection}>
-            <div className={styles.badgesTitle}>🏅 Huy Hiệu</div>
+            <div className={styles.badgesTitle}>Huy Hiệu</div>
             <div className={styles.badgesList}>
               {badges.map((badge) => (
                 <Tooltip key={badge.id} title={badge.description}>
                   <div className={styles.badge} style={{ borderColor: `${badge.color}40`, background: `${badge.color}10` }}>
-                    <span className={styles.badgeEmoji}>{badge.emoji}</span>
+                    <span className={styles.badgeEmoji}>{badge.name.charAt(0)}</span>
                     <span className={styles.badgeName} style={{ color: badge.color }}>{badge.name}</span>
                   </div>
                 </Tooltip>

@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Checkbox, Divider, Space, message } from 'antd';
-import { UserOutlined, LockOutlined, EyeOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Checkbox, Space, message } from 'antd';
+import {
+  UserOutlined,
+  LockOutlined,
+  BookOutlined,
+  BulbOutlined,
+  ReadOutlined,
+  TrophyOutlined,
+  TeamOutlined,
+} from '@ant-design/icons';
 import { history } from '@umijs/max';
 import { authUtils } from '@/utils/auth';
 import styles from './index.less';
@@ -14,7 +22,7 @@ export default function Login() {
     setLoading(true);
     try {
       await authUtils.login(values.email, values.password);
-      message.success('🎉 Đăng nhập thành công!');
+      message.success('Đăng nhập thành công!');
       setTimeout(() => history.push('/home'), 500);
     } catch (error: any) {
       message.error(error.message || 'Đăng nhập thất bại');
@@ -27,20 +35,25 @@ export default function Login() {
     form.setFieldsValue({ email, password: 'password123' });
   };
 
+  const roleLabel = (role: string) => {
+    if (role === 'admin') return 'Admin';
+    if (role === 'teacher') return 'GV';
+    return 'SV';
+  };
+
   return (
     <div className={styles.loginPage}>
       <div className={styles.container}>
-        {/* Left Side */}
         <div className={styles.leftSide}>
-          <div className={styles.logo}>📚 EduForum</div>
+          <div className={styles.logo}><BookOutlined /> EduForum</div>
           <h1 className={styles.title}>Kết Nối<br />Tri Thức Sinh Viên</h1>
           <p className={styles.subtitle}>Hỏi, trả lời và cùng nhau học tập với cộng đồng PTIT</p>
 
           <div className={styles.features}>
-            <div className={styles.feature}><span>💡</span><span>Chia sẻ kiến thức của bạn</span></div>
-            <div className={styles.feature}><span>🎓</span><span>Học từ giảng viên và chuyên gia</span></div>
-            <div className={styles.feature}><span>🏆</span><span>Tích điểm uy tín và huy hiệu</span></div>
-            <div className={styles.feature}><span>🤝</span><span>Kết nối với cộng đồng học thuật</span></div>
+            <div className={styles.feature}><BulbOutlined /><span>Chia sẻ kiến thức của bạn</span></div>
+            <div className={styles.feature}><ReadOutlined /><span>Học từ giảng viên và chuyên gia</span></div>
+            <div className={styles.feature}><TrophyOutlined /><span>Tích điểm uy tín và huy hiệu</span></div>
+            <div className={styles.feature}><TeamOutlined /><span>Kết nối với cộng đồng học thuật</span></div>
           </div>
 
           <div className={styles.stats}>
@@ -50,19 +63,17 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Right Side */}
         <div className={styles.rightSide}>
           <div className={styles.formContainer}>
             <h2 className={styles.formTitle}>Đăng Nhập</h2>
-            <p className={styles.formSubtitle}>Chào mừng bạn quay lại! 👋</p>
+            <p className={styles.formSubtitle}>Chào mừng bạn quay lại!</p>
 
-            {/* Demo accounts */}
             <div className={styles.demoSection}>
               <div className={styles.demoLabel}>Tài khoản demo (click để điền):</div>
               <div className={styles.demoButtons}>
                 {demoUsers.map((u) => (
                   <button key={u.email} className={styles.demoBtn} onClick={() => fillDemo(u.email)}>
-                    {u.role === 'admin' ? '⚙️' : u.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'} {u.name.split(' ').pop()}
+                    [{roleLabel(u.role)}] {u.name.split(' ').pop()}
                   </button>
                 ))}
               </div>
@@ -97,7 +108,7 @@ export default function Login() {
               <Form.Item>
                 <Button type="primary" danger size="large" block loading={loading} htmlType="submit"
                   className={styles.submitBtn}>
-                  🚀 Đăng Nhập
+                  Đăng Nhập
                 </Button>
               </Form.Item>
             </Form>
@@ -105,7 +116,7 @@ export default function Login() {
             <div className={styles.footer}>
               <span>Chưa có tài khoản? </span>
               <Button type="link" danger onClick={() => history.push('/register')}>
-                Đăng ký ngay →
+                Đăng ký ngay
               </Button>
             </div>
           </div>

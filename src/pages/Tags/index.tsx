@@ -30,7 +30,7 @@ export default function Tags() {
       {/* Header */}
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.pageTitle}>🏷️ Tất Cả Thẻ</h1>
+          <h1 className={styles.pageTitle}>Tất Cả Thẻ</h1>
           <p className={styles.pageSubtitle}>{ALL_TAGS.length} thẻ · {totalQuestions.toLocaleString('vi')} câu hỏi</p>
         </div>
         {followed.length > 0 && (
@@ -59,7 +59,7 @@ export default function Tags() {
             className={`${styles.catBtn} ${activeCategory === cat.key ? styles.active : ''}`}
             onClick={() => setActiveCategory(cat.key)}
           >
-            {cat.emoji} {cat.label}
+            {cat.label}
           </button>
         ))}
       </div>
@@ -96,7 +96,7 @@ export default function Tags() {
 
       {filtered.length === 0 && (
         <div className={styles.emptyState}>
-          <div>🔍</div>
+          <div>Không tìm thấy thẻ phù hợp</div>
           <p>Không tìm thấy thẻ nào</p>
         </div>
       )}

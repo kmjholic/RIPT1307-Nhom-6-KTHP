@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Avatar, Button, Space, Tag, Divider, Form, Input, Tooltip, message } from 'antd';
 import {
   LikeOutlined, LikeFilled, DislikeOutlined, DislikeFilled,
-  ShareAltOutlined, BookmarkOutlined, BookmarkFilled,
+  ShareAltOutlined, StarOutlined, StarFilled,
   CheckCircleFilled, CheckCircleOutlined, ArrowLeftOutlined, CopyOutlined,
 } from '@ant-design/icons';
 import { useParams, history } from '@umijs/max';
@@ -58,7 +58,7 @@ export default function PostDetail() {
   const handleSelectBest = (answerId: string) => {
     if (!isOwner) { message.warning('Chỉ người đặt câu hỏi mới có thể chọn câu trả lời hay nhất'); return; }
     setAnswers(answers.map((a) => ({ ...a, isBest: a.id === answerId })));
-    message.success('✅ Đã chọn câu trả lời hay nhất!');
+    message.success('Đã chọn câu trả lời hay nhất!');
   };
 
   const handleSubmitAnswer = () => {
@@ -72,7 +72,7 @@ export default function PostDetail() {
     };
     setAnswers([...answers, newAns]);
     setNewAnswer('');
-    message.success('🎉 Câu trả lời đã được đăng!');
+    message.success('Câu trả lời đã được đăng!');
   };
 
   const sortedAnswers = [...answers].sort((a, b) => (b.isBest ? 1 : 0) - (a.isBest ? 1 : 0));
@@ -101,12 +101,12 @@ export default function PostDetail() {
               {POST_DATA.author}
             </span>
             <span className={styles.roleBadge}>
-              {POST_DATA.authorRole === 'teacher' ? '👨‍🏫 Giảng viên' : '👨‍🎓 Sinh viên'}
+              {POST_DATA.authorRole === 'teacher' ? 'Giảng viên' : 'Sinh viên'}
             </span>
             <span className={styles.metaDot}>·</span>
             <span className={styles.timestamp}>{POST_DATA.timestamp}</span>
             <span className={styles.metaDot}>·</span>
-            <span className={styles.viewCount}>👁 {POST_DATA.views} lượt xem</span>
+            <span className={styles.viewCount}>{POST_DATA.views} lượt xem</span>
           </div>
         </div>
 
@@ -158,7 +158,7 @@ export default function PostDetail() {
             className={`${styles.actionBtn} ${isBookmarked ? styles.bookmarked : ''}`}
             onClick={() => setIsBookmarked(!isBookmarked)}
           >
-            {isBookmarked ? <BookmarkFilled /> : <BookmarkOutlined />}
+            {isBookmarked ? <StarFilled /> : <StarOutlined />}
             {isBookmarked ? 'Đã Lưu' : 'Lưu Bài'}
           </button>
           <button className={styles.actionBtn}
@@ -204,7 +204,7 @@ export default function PostDetail() {
                     {answer.author}
                   </span>
                   <span className={styles.roleBadge}>
-                    {answer.authorRole === 'teacher' ? '👨‍🏫' : '👨‍🎓'}
+                    {answer.authorRole === 'teacher' ? 'GV' : 'SV'}
                   </span>
                   <span className={styles.repBadge}>⭐ {answer.authorRep}</span>
                   <span className={styles.metaDot}>·</span>
@@ -234,7 +234,7 @@ export default function PostDetail() {
                 </div>
 
                 <div className={styles.answerActions}>
-                  <button className={styles.replyBtn}>💬 Trả Lời</button>
+                  <button className={styles.replyBtn}>Trả Lời</button>
                   {isOwner && !answer.isBest && (
                     <button className={styles.selectBestBtn} onClick={() => handleSelectBest(answer.id)}>
                       <CheckCircleOutlined /> Chọn Hay Nhất
@@ -290,7 +290,7 @@ export default function PostDetail() {
           <div className={styles.answerFormActions}>
             <Button type="primary" danger size="large"
               disabled={!newAnswer.trim()} onClick={handleSubmitAnswer}>
-              📤 Đăng Câu Trả Lời
+              Đăng Câu Trả Lời
             </Button>
             <span className={styles.charCount}>{newAnswer.length} ký tự</span>
           </div>

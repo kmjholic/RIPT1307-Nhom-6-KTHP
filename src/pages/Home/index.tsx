@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Space } from 'antd';
-import { ArrowRightOutlined, RightOutlined } from '@ant-design/icons';
+import {
+  ArrowRightOutlined,
+  QuestionCircleOutlined,
+  TeamOutlined,
+  UserOutlined,
+  CommentOutlined,
+  AimOutlined,
+  TrophyOutlined,
+  BulbOutlined,
+  LikeOutlined,
+  EditOutlined,
+  BookOutlined,
+  FireOutlined,
+  StarOutlined,
+} from '@ant-design/icons';
 import { history } from '@umijs/max';
 import PostCard from '@/components/PostCard';
 import { MOCK_QUESTIONS } from '@/server/seed/questions';
@@ -9,39 +23,39 @@ import styles from './index.less';
 const mockPosts = MOCK_QUESTIONS.slice(0, 3);
 
 const stats = [
-  { value: '10.000+', label: 'Câu Hỏi', icon: '❓', color: '#dc2626' },
-  { value: '2.000+', label: 'Sinh Viên', icon: '👨‍🎓', color: '#3b82f6' },
-  { value: '500+', label: 'Giảng Viên', icon: '👨‍🏫', color: '#10b981' },
-  { value: '8.000+', label: 'Câu Trả Lời', icon: '💬', color: '#f59e0b' },
+  { value: '10.000+', label: 'Câu Hỏi', icon: <QuestionCircleOutlined />, color: '#dc2626' },
+  { value: '2.000+', label: 'Sinh Viên', icon: <TeamOutlined />, color: '#3b82f6' },
+  { value: '500+', label: 'Giảng Viên', icon: <UserOutlined />, color: '#10b981' },
+  { value: '8.000+', label: 'Câu Trả Lời', icon: <CommentOutlined />, color: '#f59e0b' },
 ];
 
 const features = [
   {
-    icon: '🎯',
+    icon: <AimOutlined />,
     title: 'Hỏi & Đáp Nhanh',
     desc: 'Đặt câu hỏi và nhận câu trả lời từ sinh viên và giảng viên trong vài phút',
   },
   {
-    icon: '🏆',
+    icon: <TrophyOutlined />,
     title: 'Hệ Thống Uy Tín',
     desc: 'Tích điểm, nhận huy hiệu và leo lên bảng xếp hạng cộng đồng',
   },
   {
-    icon: '💡',
+    icon: <BulbOutlined />,
     title: 'Kiến Thức Chuyên Sâu',
     desc: 'Tìm kiếm câu trả lời cho mọi môn học: CTDL, Web Dev, AI, Database...',
   },
   {
-    icon: '🤝',
+    icon: <TeamOutlined />,
     title: 'Cộng Đồng Học Thuật',
     desc: 'Kết nối với hàng nghìn sinh viên và giảng viên cùng trường',
   },
 ];
 
 const topUsers = [
-  { name: 'PGS.TS Lê Minh Đức', role: 'Giảng viên', rep: 5430, emoji: '🏆', id: '3' },
-  { name: 'Trần Thị Hương', role: 'Sinh viên CNTT', rep: 1250, emoji: '⭐', id: '2' },
-  { name: 'Hoàng Văn Bình', role: 'Sinh viên KTPM', rep: 980, emoji: '⭐', id: '4' },
+  { name: 'PGS.TS Lê Minh Đức', role: 'Giảng viên', rep: 5430, id: '3' },
+  { name: 'Trần Thị Hương', role: 'Sinh viên CNTT', rep: 1250, id: '2' },
+  { name: 'Hoàng Văn Bình', role: 'Sinh viên KTPM', rep: 980, id: '4' },
 ];
 
 export default function Home() {
@@ -77,7 +91,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <div className={styles.heroBadge}>🎓 Nền tảng học thuật #1 PTIT</div>
+          <div className={styles.heroBadge}>Nền tảng học thuật #1 PTIT</div>
           <h1 className={styles.heroTitle}>
             Kết Nối<br />
             <span className={styles.heroTitleHighlight}>Tri Thức Sinh Viên</span>
@@ -94,7 +108,7 @@ export default function Home() {
               className={styles.ctaPrimary}
               onClick={() => history.push('/post/new')}
             >
-              ✏️ Đặt Câu Hỏi Ngay
+              <EditOutlined /> Đặt Câu Hỏi Ngay
             </Button>
             <Button
               size="large"
@@ -115,27 +129,27 @@ export default function Home() {
 
         <div className={styles.heroIllustration}>
           <div className={styles.floatingCard} style={{ animationDelay: '0s' }}>
-            <span>💬</span>
+            <CommentOutlined />
             <div>
               <div className={styles.cardTitle}>Câu trả lời mới</div>
               <div className={styles.cardSub}>OOP trong Java</div>
             </div>
           </div>
           <div className={styles.floatingCard} style={{ animationDelay: '0.4s' }}>
-            <span>🏆</span>
+            <TrophyOutlined />
             <div>
               <div className={styles.cardTitle}>Best Answer</div>
               <div className={styles.cardSub}>+25 điểm uy tín</div>
             </div>
           </div>
           <div className={styles.floatingCard} style={{ animationDelay: '0.8s' }}>
-            <span>👍</span>
+            <LikeOutlined />
             <div>
               <div className={styles.cardTitle}>+100 upvote</div>
               <div className={styles.cardSub}>Huy hiệu mở khóa</div>
             </div>
           </div>
-          <div className={styles.heroEmoji}>📚</div>
+          <BookOutlined className={styles.heroEmoji} />
         </div>
       </section>
 
@@ -155,7 +169,7 @@ export default function Home() {
       {/* Hot Questions */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h2>🔥 Câu Hỏi Nổi Bật</h2>
+          <h2><FireOutlined /> Câu Hỏi Nổi Bật</h2>
           <Button type="link" danger onClick={() => history.push('/forum')}>
             Xem Tất Cả <ArrowRightOutlined />
           </Button>
@@ -184,7 +198,7 @@ export default function Home() {
       {/* Features Section */}
       <section className={styles.featuresSection}>
         <div className={styles.sectionHeader}>
-          <h2>✨ Tại Sao Chọn EduForum?</h2>
+          <h2><StarOutlined /> Tại Sao Chọn EduForum?</h2>
         </div>
         <div className={styles.featuresGrid}>
           {features.map((f, i) => (
@@ -200,7 +214,7 @@ export default function Home() {
       {/* Top Contributors */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h2>🏆 Top Đóng Góp Viên</h2>
+          <h2><TrophyOutlined /> Top Đóng Góp Viên</h2>
           <Button type="link" danger onClick={() => history.push('/leaderboard')}>
             Xem Bảng Xếp Hạng <ArrowRightOutlined />
           </Button>
@@ -217,7 +231,7 @@ export default function Home() {
               <div className={styles.contributorName}>{user.name}</div>
               <div className={styles.contributorRole}>{user.role}</div>
               <div className={styles.contributorRep}>
-                {user.emoji} {user.rep.toLocaleString('vi')} pts
+                {user.rep.toLocaleString('vi')} pts
               </div>
             </div>
           ))}
