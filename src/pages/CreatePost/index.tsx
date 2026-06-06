@@ -1,26 +1,26 @@
-import {
-  Form,
-  Input,
-  Button,
-  Card,
-  Select,
-  Tag,
-  Space,
-  message,
-  Row,
-  Col,
-} from 'antd';
+import { authUtils } from '@/utils/auth';
 import {
   BoldOutlined,
-  ItalicOutlined,
   CodeOutlined,
-  PictureOutlined,
+  ItalicOutlined,
   LinkOutlined,
+  PictureOutlined,
   SendOutlined,
 } from '@ant-design/icons';
 import { history, request } from '@umijs/max';
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  Input,
+  message,
+  Row,
+  Select,
+  Space,
+  Tag,
+} from 'antd';
 import { useState } from 'react';
-import { authUtils } from '@/utils/auth';
 import styles from './index.less';
 
 export default function CreatePost() {
@@ -86,7 +86,11 @@ export default function CreatePost() {
 
     setLoading(true);
     try {
-      const res = await request<{ success: boolean; message?: string; errors?: any[] }>('/api/posts', {
+      const res = await request<{
+        success: boolean;
+        message?: string;
+        errors?: any[];
+      }>('/api/posts', {
         method: 'POST',
         data: {
           title: values.title,
@@ -117,7 +121,6 @@ export default function CreatePost() {
     }
   };
 
-
   return (
     <div className={styles.createPostPage}>
       <div className={styles.header}>
@@ -147,7 +150,7 @@ export default function CreatePost() {
           >
             <Input
               size="large"
-              placeholder="Tiêu đề bài viết (ví dụ: Làm sao để lấy phần tử từ một mảng trong Java?)"
+              placeholder="Tiêu đề bài viết"
               className={styles.titleInput}
             />
           </Form.Item>
@@ -168,11 +171,7 @@ export default function CreatePost() {
                 title="In nghiêng (Ctrl+I)"
               />
               <div className={styles.divider} />
-              <Button
-                type="text"
-                icon={<CodeOutlined />}
-                title="Chèn code"
-              />
+              <Button type="text" icon={<CodeOutlined />} title="Chèn code" />
               <Button
                 type="text"
                 icon={<PictureOutlined />}
@@ -201,8 +200,8 @@ Bạn có thể:
           />
 
           <div className={styles.previewHint}>
-            Gợi ý: Hãy mô tả vấn đề của bạn một cách chi tiết để nhận được
-            câu trả lời tốt hơn
+            Gợi ý: Hãy mô tả vấn đề của bạn một cách chi tiết để nhận được câu
+            trả lời tốt hơn
           </div>
         </Card>
 
@@ -234,11 +233,7 @@ Bạn có thể:
 
           <Col xs={24} sm={12}>
             <Card className={styles.card}>
-              <Form.Item
-                name="level"
-                label="Mức Độ Khó"
-                initialValue="medium"
-              >
+              <Form.Item name="level" label="Mức Độ Khó" initialValue="medium">
                 <Select
                   size="large"
                   options={[

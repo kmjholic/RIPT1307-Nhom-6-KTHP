@@ -1,29 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Space } from 'antd';
+import PostCard from '@/components/PostCard';
 import {
-  ArrowRightOutlined,
-  QuestionCircleOutlined,
-  TeamOutlined,
-  UserOutlined,
-  CommentOutlined,
   AimOutlined,
-  TrophyOutlined,
-  BulbOutlined,
-  LikeOutlined,
-  EditOutlined,
+  ArrowRightOutlined,
   BookOutlined,
+  BulbOutlined,
+  CommentOutlined,
+  EditOutlined,
   FireOutlined,
+  LikeOutlined,
+  QuestionCircleOutlined,
   StarOutlined,
+  TeamOutlined,
+  TrophyOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import { history, request } from '@umijs/max';
-import PostCard from '@/components/PostCard';
+import { Button } from 'antd';
+import { useEffect, useState } from 'react';
 import styles from './index.less';
 
 const stats = [
-  { value: '10.000+', label: 'Câu Hỏi', icon: <QuestionCircleOutlined />, color: '#dc2626' },
-  { value: '2.000+', label: 'Sinh Viên', icon: <TeamOutlined />, color: '#3b82f6' },
-  { value: '500+', label: 'Giảng Viên', icon: <UserOutlined />, color: '#10b981' },
-  { value: '8.000+', label: 'Câu Trả Lời', icon: <CommentOutlined />, color: '#f59e0b' },
+  {
+    value: '10.000+',
+    label: 'Câu Hỏi',
+    icon: <QuestionCircleOutlined />,
+    color: '#dc2626',
+  },
+  {
+    value: '2.000+',
+    label: 'Sinh Viên',
+    icon: <TeamOutlined />,
+    color: '#3b82f6',
+  },
+  {
+    value: '500+',
+    label: 'Giảng Viên',
+    icon: <UserOutlined />,
+    color: '#10b981',
+  },
+  {
+    value: '8.000+',
+    label: 'Câu Trả Lời',
+    icon: <CommentOutlined />,
+    color: '#f59e0b',
+  },
 ];
 
 const features = [
@@ -59,14 +79,20 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resPosts = await request<{ success: boolean; data: { list: any[] } }>('/api/posts', {
-          params: { sort: 'views' }
+        const resPosts = await request<{
+          success: boolean;
+          data: { list: any[] };
+        }>('/api/posts', {
+          params: { sort: 'views' },
         });
         if (resPosts && resPosts.success) {
           setPosts(resPosts.data.list.slice(0, 3));
         }
 
-        const resLeaderboard = await request<{ success: boolean; data: { list: any[] } }>('/api/leaderboard');
+        const resLeaderboard = await request<{
+          success: boolean;
+          data: { list: any[] };
+        }>('/api/leaderboard');
         if (resLeaderboard && resLeaderboard.success) {
           setTopUsers(resLeaderboard.data.list.slice(0, 3));
         }
@@ -96,7 +122,6 @@ export default function Home() {
     return () => timers.forEach(clearInterval);
   }, []);
 
-
   const formatNumber = (n: number, i: number) => {
     if (i === 0) return n >= 10000 ? '10.000+' : n.toLocaleString('vi');
     if (i === 1) return n >= 2000 ? '2.000+' : n.toLocaleString('vi');
@@ -111,12 +136,15 @@ export default function Home() {
         <div className={styles.heroContent}>
           <div className={styles.heroBadge}>Nền tảng học thuật #1 PTIT</div>
           <h1 className={styles.heroTitle}>
-            Kết Nối<br />
-            <span className={styles.heroTitleHighlight}>Tri Thức Sinh Viên</span>
+            Kết Nối
+            <br />
+            <span className={styles.heroTitleHighlight}>
+              Tri Thức Sinh Viên
+            </span>
           </h1>
           <p className={styles.heroSubtitle}>
-            Hỏi, trả lời và cùng nhau học tập với cộng đồng sinh viên và giảng viên.
-            Giống StackOverflow nhưng dành riêng cho bạn.
+            Hỏi, trả lời và cùng nhau học tập với cộng đồng sinh viên và giảng
+            viên.
           </p>
           <div className={styles.heroCta}>
             <Button
@@ -139,8 +167,19 @@ export default function Home() {
 
           {/* Tags Showcase */}
           <div className={styles.tagCloud}>
-            {['Java', 'React', 'Python', 'SQL', 'AI/ML', 'Node.js', 'Git', 'CTDL'].map((tag) => (
-              <span key={tag} className={styles.tagPill}>{tag}</span>
+            {[
+              'Java',
+              'React',
+              'Python',
+              'SQL',
+              'AI/ML',
+              'Node.js',
+              'Git',
+              'CTDL',
+            ].map((tag) => (
+              <span key={tag} className={styles.tagPill}>
+                {tag}
+              </span>
             ))}
           </div>
         </div>
@@ -153,14 +192,20 @@ export default function Home() {
               <div className={styles.cardSub}>OOP trong Java</div>
             </div>
           </div>
-          <div className={styles.floatingCard} style={{ animationDelay: '0.4s' }}>
+          <div
+            className={styles.floatingCard}
+            style={{ animationDelay: '0.4s' }}
+          >
             <TrophyOutlined />
             <div>
               <div className={styles.cardTitle}>Best Answer</div>
               <div className={styles.cardSub}>+25 điểm uy tín</div>
             </div>
           </div>
-          <div className={styles.floatingCard} style={{ animationDelay: '0.8s' }}>
+          <div
+            className={styles.floatingCard}
+            style={{ animationDelay: '0.8s' }}
+          >
             <LikeOutlined />
             <div>
               <div className={styles.cardTitle}>+100 upvote</div>
@@ -175,7 +220,9 @@ export default function Home() {
       <section className={styles.statsSection}>
         {stats.map((stat, i) => (
           <div key={i} className={styles.statCard}>
-            <div className={styles.statIcon} style={{ color: stat.color }}>{stat.icon}</div>
+            <div className={styles.statIcon} style={{ color: stat.color }}>
+              {stat.icon}
+            </div>
             <div className={styles.statValue} style={{ color: stat.color }}>
               {formatNumber(counters[i], i)}
             </div>
@@ -187,14 +234,20 @@ export default function Home() {
       {/* Hot Questions */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h2><FireOutlined /> Câu Hỏi Nổi Bật</h2>
+          <h2>
+            <FireOutlined /> Câu Hỏi Nổi Bật
+          </h2>
           <Button type="link" danger onClick={() => history.push('/forum')}>
             Xem Tất Cả <ArrowRightOutlined />
           </Button>
         </div>
         <div className={styles.postGrid}>
           {posts.map((post, index) => (
-            <div key={post.id} className={styles.postItem} style={{ animationDelay: `${index * 0.1}s` }}>
+            <div
+              key={post.id}
+              className={styles.postItem}
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
               <PostCard
                 id={post.id}
                 title={post.title}
@@ -216,11 +269,17 @@ export default function Home() {
       {/* Features Section */}
       <section className={styles.featuresSection}>
         <div className={styles.sectionHeader}>
-          <h2><StarOutlined /> Tại Sao Chọn EduForum?</h2>
+          <h2>
+            <StarOutlined /> Tại Sao Chọn EduForum?
+          </h2>
         </div>
         <div className={styles.featuresGrid}>
           {features.map((f, i) => (
-            <div key={i} className={styles.featureCard} style={{ animationDelay: `${i * 0.1}s` }}>
+            <div
+              key={i}
+              className={styles.featureCard}
+              style={{ animationDelay: `${i * 0.1}s` }}
+            >
               <div className={styles.featureIcon}>{f.icon}</div>
               <h3 className={styles.featureTitle}>{f.title}</h3>
               <p className={styles.featureDesc}>{f.desc}</p>
@@ -232,8 +291,14 @@ export default function Home() {
       {/* Top Contributors */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h2><TrophyOutlined /> Top Đóng Góp Viên</h2>
-          <Button type="link" danger onClick={() => history.push('/leaderboard')}>
+          <h2>
+            <TrophyOutlined /> Top Đóng Góp Viên
+          </h2>
+          <Button
+            type="link"
+            danger
+            onClick={() => history.push('/leaderboard')}
+          >
             Xem Bảng Xếp Hạng <ArrowRightOutlined />
           </Button>
         </div>
@@ -245,10 +310,16 @@ export default function Home() {
               onClick={() => history.push(`/profile/${user.id}`)}
             >
               <div className={styles.contributorRank}>#{i + 1}</div>
-              <div className={styles.contributorAvatar}>{user.name.charAt(0)}</div>
+              <div className={styles.contributorAvatar}>
+                {user.name.charAt(0)}
+              </div>
               <div className={styles.contributorName}>{user.name}</div>
               <div className={styles.contributorRole}>
-                {user.role === 'giangvien' ? 'Giảng viên' : user.role === 'admin' ? 'Quản trị viên' : `Sinh viên ${user.department || ''}`}
+                {user.role === 'giangvien'
+                  ? 'Giảng viên'
+                  : user.role === 'admin'
+                  ? 'Quản trị viên'
+                  : `Sinh viên ${user.department || ''}`}
               </div>
               <div className={styles.contributorRep}>
                 {(user.reputation ?? 0).toLocaleString('vi')} pts
@@ -264,12 +335,20 @@ export default function Home() {
           <h2>Sẵn sàng chia sẻ kiến thức?</h2>
           <p>Tham gia cùng hàng nghìn sinh viên và giảng viên ngay hôm nay</p>
           <div className={styles.ctaBannerActions}>
-            <Button size="large" type="primary" className={styles.ctaBannerBtn}
-              onClick={() => history.push('/register')}>
+            <Button
+              size="large"
+              type="primary"
+              className={styles.ctaBannerBtn}
+              onClick={() => history.push('/register')}
+            >
               Đăng Ký Miễn Phí
             </Button>
-            <Button size="large" ghost className={styles.ctaBannerGhost}
-              onClick={() => history.push('/forum')}>
+            <Button
+              size="large"
+              ghost
+              className={styles.ctaBannerGhost}
+              onClick={() => history.push('/forum')}
+            >
               Khám Phá Ngay
             </Button>
           </div>

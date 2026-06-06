@@ -59302,12 +59302,10 @@ async function login(input) {
   const { email, password } = input;
   const found = await UserEntity.findOne({ where: { email } });
   console.log("=========================================");
-  console.log("\u{1F525} LOG DEBUG \u0110\u0102NG NH\u1EACP TH\u1EF0C T\u1EBE:");
+  console.log("LOG DEBUG \u0110\u0102NG NH\u1EACP :");
   console.log("--> Email client g\u1EEDi l\xEAn:", `"${email}"`);
-  console.log("--> M\u1EADt kh\u1EA9u th\xF4 client g\u1EEDi l\xEAn:", `"${password}"`);
   console.log("--> T\xECm th\u1EA5y User trong DB kh\xF4ng?:", found ? "C\xD3" : "KH\xD4NG");
   if (found) {
-    console.log("--> Chu\u1ED7i Hash m\u1EADt kh\u1EA9u l\u1EA5y t\u1EEB DB:", `"${found.password}"`);
     const checkVerify = await verifyPassword(password, found.password);
     console.log("--> K\u1EBFt qu\u1EA3 h\xE0m verifyPassword tr\u1EA3 v\u1EC1:", checkVerify);
     console.log("=========================================");
@@ -59338,9 +59336,7 @@ async function login(input) {
       return { user: userObj, token: createToken(found.id) };
     }
   } else {
-    console.log(
-      "\u274C L\u1ED6I CH\xCD M\u1EA0NG: KH\xD4NG T\xCCM TH\u1EA4Y USER N\xC0O C\xD3 EMAIL N\xC0Y TRONG DB!"
-    );
+    console.log("KH\xD4NG T\xCCM TH\u1EA4Y USER N\xC0O C\xD3 EMAIL N\xC0Y TRONG DB!");
     console.log("=========================================");
   }
   throw new Error("Email ho\u1EB7c m\u1EADt kh\u1EA9u kh\xF4ng ch\xEDnh x\xE1c");

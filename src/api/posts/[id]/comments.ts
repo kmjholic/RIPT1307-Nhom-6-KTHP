@@ -65,13 +65,11 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
       res.status(200).json({ success: true, data: list });
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          success: false,
-          message: 'Lỗi lấy danh sách bình luận',
-          error: String(error),
-        });
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi lấy danh sách bình luận',
+        error: String(error),
+      });
     }
     return;
   }
@@ -169,13 +167,11 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         },
       });
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          success: false,
-          message: 'Lỗi thêm bình luận',
-          error: String(error),
-        });
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi thêm bình luận',
+        error: String(error),
+      });
     }
     return;
   }
@@ -212,20 +208,16 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         await question.save();
       }
 
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: 'Cập nhật câu trả lời hay nhất thành công',
-        });
+      res.status(200).json({
+        success: true,
+        message: 'Cập nhật câu trả lời hay nhất thành công',
+      });
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          success: false,
-          message: 'Lỗi cập nhật bình luận',
-          error: String(error),
-        });
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi cập nhật bình luận',
+        error: String(error),
+      });
     }
     return;
   }
