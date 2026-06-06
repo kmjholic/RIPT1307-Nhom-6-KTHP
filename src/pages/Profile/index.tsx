@@ -171,7 +171,7 @@ export default function Profile() {
             <div className={styles.nameRow}>
               <h1 className={styles.profileName}>{user.name}</h1>
               <span className={styles.roleTag}>
-                {user.role === 'teacher' ? 'Giảng viên' : 'Sinh viên'}
+                {user.role === 'giangvien' ? 'Giảng viên' : 'Sinh viên'}
               </span>
             </div>
 

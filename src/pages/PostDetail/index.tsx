@@ -214,7 +214,7 @@ export default function PostDetail() {
               {post.author}
             </span>
             <span className={styles.roleBadge}>
-              {post.authorRole === 'teacher' ? 'Giảng viên' : 'Sinh viên'}
+              {post.authorRole === 'giangvien' ? 'Giảng viên' : 'Sinh viên'}
             </span>
             {post.authorRep !== undefined && <span className={styles.repBadge}>⭐ {post.authorRep}</span>}
             <span className={styles.metaDot}>·</span>
@@ -311,14 +311,14 @@ export default function PostDetail() {
 
               <div className={styles.answerContent}>
                 <div className={styles.answerMeta}>
-                  <Avatar size={28} style={{ background: answer.authorRole === 'teacher' ? '#6366f1' : 'var(--color-primary)' }}>
+                  <Avatar size={28} style={{ background: answer.authorRole === 'giangvien' ? '#6366f1' : 'var(--color-primary)' }}>
                     {answer.avatar}
                   </Avatar>
                   <span className={styles.authorName} onClick={() => history.push(`/profile/${answer.authorId}`)}>
                     {answer.author}
                   </span>
                   <span className={styles.roleBadge}>
-                    {answer.authorRole === 'teacher' ? 'GV' : 'SV'}
+                    {answer.authorRole === 'giangvien' ? 'GV' : 'SV'}
                   </span>
                   <span className={styles.repBadge}>⭐ {answer.authorRep}</span>
                   <span className={styles.metaDot}>·</span>

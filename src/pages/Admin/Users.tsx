@@ -9,11 +9,11 @@ import { history, request } from '@umijs/max';
 import styles from './index.less';
 
 const ROLE_COLORS: Record<string, string> = {
-  student: 'blue', teacher: 'purple', admin: 'red',
+  sinhvien: 'blue', giangvien: 'purple', admin: 'red',
 };
 
 const ROLE_LABELS: Record<string, string> = {
-  student: 'Sinh viên', teacher: 'Giảng viên', admin: 'Admin',
+  sinhvien: 'Sinh viên', giangvien: 'Giảng viên', admin: 'Admin',
 };
 
 export default function AdminUsers() {
@@ -144,7 +144,7 @@ export default function AdminUsers() {
       key: 'user',
       render: (record: any) => (
         <div className={styles.userCell}>
-          <Avatar size={36} style={{ background: record.role === 'teacher' ? '#6366f1' : 'var(--color-primary)' }}>
+          <Avatar size={36} style={{ background: record.role === 'giangvien' ? '#6366f1' : 'var(--color-primary)' }}>
             {record.name.charAt(0)}
           </Avatar>
           <div>
@@ -234,8 +234,8 @@ export default function AdminUsers() {
 
   const stats = [
     { label: 'Tổng Người Dùng', value: users.length, color: '#3b82f6' },
-    { label: 'Sinh Viên', value: users.filter((u) => u.role === 'student').length, color: '#10b981' },
-    { label: 'Giảng Viên', value: users.filter((u) => u.role === 'teacher').length, color: '#8b5cf6' },
+    { label: 'Sinh Viên', value: users.filter((u) => u.role === 'sinhvien').length, color: '#10b981' },
+    { label: 'Giảng Viên', value: users.filter((u) => u.role === 'giangvien').length, color: '#8b5cf6' },
     { label: 'Đã Khóa', value: users.filter((u) => u.status === 'banned').length, color: '#ef4444' },
   ];
 
@@ -269,8 +269,8 @@ export default function AdminUsers() {
           onChange={setRoleFilter}
           options={[
             { label: 'Tất Cả', value: 'all' },
-            { label: 'Sinh Viên', value: 'student' },
-            { label: 'Giảng Viên', value: 'teacher' },
+            { label: 'Sinh Viên', value: 'sinhvien' },
+            { label: 'Giảng Viên', value: 'giangvien' },
           ]}
           style={{ width: 160 }}
         />
@@ -309,8 +309,8 @@ export default function AdminUsers() {
           <Form.Item name="password" label="Mật khẩu" rules={[{ required: true, min: 6, message: 'Mật khẩu từ 6 ký tự' }]}>
             <Input.Password placeholder="Nhập mật khẩu" />
           </Form.Item>
-          <Form.Item name="role" label="Vai trò" initialValue="student" rules={[{ required: true }]}>
-            <Select options={[{ label: 'Sinh viên', value: 'student' }, { label: 'Giảng viên', value: 'teacher' }, { label: 'Quản trị viên', value: 'admin' }]} />
+          <Form.Item name="role" label="Vai trò" initialValue="sinhvien" rules={[{ required: true }]}>
+            <Select options={[{ label: 'Sinh viên', value: 'sinhvien' }, { label: 'Giảng viên', value: 'giangvien' }, { label: 'Quản trị viên', value: 'admin' }]} />
           </Form.Item>
           <Form.Item name="department" label="Khoa/Chuyên ngành" initialValue="CNTT">
             <Input placeholder="Công Nghệ Thông Tin" />

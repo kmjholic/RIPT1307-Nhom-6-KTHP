@@ -13,7 +13,7 @@ export interface Comment {
   parentId?: string | null;
   author: string;
   authorId?: string;
-  authorRole?: 'student' | 'teacher' | 'admin';
+  authorRole?: 'sinhvien' | 'giangvien' | 'admin';
   authorRep?: number;
   avatar?: string;
   timestamp: string;

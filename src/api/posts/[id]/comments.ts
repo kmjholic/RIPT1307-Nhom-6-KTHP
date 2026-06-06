@@ -1,6 +1,12 @@
-import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 import { initDatabase } from '@/server/db';
-import { QuestionEntity, UserEntity, CommentEntity } from '@/server/models/entities';
+import {
+  CommentEntity,
+  QuestionEntity,
+  UserEntity,
+} from '@/server/models/entities';
+import { notifyNewReply } from '@/server/utils/email';
+import { validateCommentInput } from '@/utils/validation';
+import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 import { formatTime } from '../index';
 
 export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
@@ -12,14 +18,24 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
       const comments = await CommentEntity.findAll({
         where: { questionId: id, parentId: null },
         include: [
-          { model: UserEntity, as: 'author', attributes: ['name', 'role', 'reputation'] },
+          {
+            model: UserEntity,
+            as: 'author',
+            attributes: ['name', 'role', 'reputation'],
+          },
           {
             model: CommentEntity,
             as: 'replies',
-            include: [{ model: UserEntity, as: 'author', attributes: ['name', 'role', 'reputation'] }]
-          }
+            include: [
+              {
+                model: UserEntity,
+                as: 'author',
+                attributes: ['name', 'role', 'reputation'],
+              },
+            ],
+          },
         ],
-        order: [['createdAt', 'ASC']]
+        order: [['createdAt', 'ASC']],
       });
 
       const list = comments.map((c: any) => ({
@@ -28,26 +44,34 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         parentId: c.parentId,
         author: c.author ? c.author.name : 'Unknown',
         authorId: c.authorId,
-        authorRole: c.author ? c.author.role : 'student',
+        authorRole: c.author ? c.author.role : 'sinhvien',
         authorRep: c.author ? c.author.reputation : 0,
         avatar: c.author ? c.author.name.charAt(0) : 'U',
         timestamp: formatTime(c.createdAt),
         votes: c.votes,
         isBest: c.isBest,
         content: c.content,
-        replies: c.replies ? c.replies.map((r: any) => ({
-          id: r.id,
-          author: r.author ? r.author.name : 'Unknown',
-          authorId: r.authorId,
-          timestamp: formatTime(r.createdAt),
-          content: r.content,
-          votes: r.votes
-        })) : []
+        replies: c.replies
+          ? c.replies.map((r: any) => ({
+              id: r.id,
+              author: r.author ? r.author.name : 'Unknown',
+              authorId: r.authorId,
+              timestamp: formatTime(r.createdAt),
+              content: r.content,
+              votes: r.votes,
+            }))
+          : [],
       }));
 
       res.status(200).json({ success: true, data: list });
     } catch (error) {
-      res.status(500).json({ success: false, message: 'Lỗi lấy danh sách bình luận', error: String(error) });
+      res
+        .status(500)
+        .json({
+          success: false,
+          message: 'Lỗi lấy danh sách bình luận',
+          error: String(error),
+        });
     }
     return;
   }
@@ -56,20 +80,37 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
     try {
       const { content, authorId, parentId } = req.body ?? {};
 
-      if (!content || !authorId) {
-        res.status(400).json({ success: false, message: 'Thiếu nội dung bình luận hoặc tác giả' });
+      // Validate input
+      const validation = validateCommentInput({ content });
+      if (!validation.isValid) {
+        res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: validation.errors,
+        });
+        return;
+      }
+
+      if (!authorId) {
+        res
+          .status(400)
+          .json({ success: false, message: 'Vui lòng đăng nhập để bình luận' });
         return;
       }
 
       const question = await QuestionEntity.findByPk(id);
       if (!question) {
-        res.status(404).json({ success: false, message: 'Bài viết không tồn tại' });
+        res
+          .status(404)
+          .json({ success: false, message: 'Bài viết không tồn tại' });
         return;
       }
 
       const user = await UserEntity.findByPk(authorId);
       if (!user) {
-        res.status(404).json({ success: false, message: 'Tác giả không tồn tại' });
+        res
+          .status(404)
+          .json({ success: false, message: 'Tác giả không tồn tại' });
         return;
       }
 
@@ -80,8 +121,8 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         authorId,
         votes: 0,
         isBest: false,
-        content,
-        createdAt: new Date()
+        content: content.trim(),
+        createdAt: new Date(),
       });
 
       question.commentsCount += 1;
@@ -91,10 +132,11 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
       await user.save();
 
       try {
-        const { notifyNewReply } = await import('@/server/utils/email');
         if (parentId) {
           const parentComment = await CommentEntity.findByPk(parentId, {
-            include: [{ model: UserEntity, as: 'author', attributes: ['email'] }]
+            include: [
+              { model: UserEntity, as: 'author', attributes: ['email'] },
+            ],
           });
           if (parentComment && parentComment.author) {
             await notifyNewReply(id, parentComment.author.email);
@@ -106,7 +148,7 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
           }
         }
       } catch (err) {
-        console.error('[Email] Lỗi gửi email thông báo bình luận mới:', err);
+        console.error('[Email] Lỗi gửi email thông báo:', err);
       }
 
       res.status(201).json({
@@ -123,11 +165,17 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
           votes: 0,
           isBest: false,
           content: newComment.content,
-          replies: []
-        }
+          replies: [],
+        },
       });
     } catch (error) {
-      res.status(500).json({ success: false, message: 'Lỗi thêm bình luận', error: String(error) });
+      res
+        .status(500)
+        .json({
+          success: false,
+          message: 'Lỗi thêm bình luận',
+          error: String(error),
+        });
     }
     return;
   }
@@ -142,14 +190,16 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
       const comment = await CommentEntity.findByPk(commentId);
       if (!comment) {
-        res.status(404).json({ success: false, message: 'Bình luận không tồn tại' });
+        res
+          .status(404)
+          .json({ success: false, message: 'Bình luận không tồn tại' });
         return;
       }
 
       if (isBest) {
         await CommentEntity.update(
           { isBest: false },
-          { where: { questionId: id } }
+          { where: { questionId: id } },
         );
       }
 
@@ -162,13 +212,23 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         await question.save();
       }
 
-      res.status(200).json({ success: true, message: 'Cập nhật câu trả lời hay nhất thành công' });
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: 'Cập nhật câu trả lời hay nhất thành công',
+        });
     } catch (error) {
-      res.status(500).json({ success: false, message: 'Lỗi cập nhật bình luận', error: String(error) });
+      res
+        .status(500)
+        .json({
+          success: false,
+          message: 'Lỗi cập nhật bình luận',
+          error: String(error),
+        });
     }
     return;
   }
 
   res.status(405).json({ success: false, message: 'Method not allowed' });
 }
-

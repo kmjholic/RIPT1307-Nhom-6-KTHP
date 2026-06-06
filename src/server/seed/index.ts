@@ -1,17 +1,22 @@
-import { UserEntity, TagEntity, QuestionEntity, CommentEntity } from '../models/entities';
+import {
+  CommentEntity,
+  QuestionEntity,
+  TagEntity,
+  UserEntity,
+} from '../models/entities';
 import { hashPassword } from '../models/User';
-import { MOCK_ADMIN_USERS } from './users';
+import { MOCK_COMMENTS_BY_QUESTION, MOCK_QUESTIONS } from './questions';
 import { MOCK_TAGS } from './tags';
-import { MOCK_QUESTIONS, MOCK_COMMENTS_BY_QUESTION } from './questions';
+import { MOCK_ADMIN_USERS } from './users';
 
-export { MOCK_USERS, MOCK_ADMIN_USERS } from './users';
-export { MOCK_QUESTIONS, MOCK_COMMENTS_BY_QUESTION } from './questions';
+export { MOCK_COMMENTS_BY_QUESTION, MOCK_QUESTIONS } from './questions';
 export { MOCK_TAGS, TAG_CATEGORIES } from './tags';
+export { MOCK_ADMIN_USERS, MOCK_USERS } from './users';
 
 export async function seedDatabase() {
   try {
     // 1. Đồng bộ cấu trúc bảng
-    await UserEntity.sequelize?.sync({ alter: true });
+    await UserEntity.sequelize?.sync({ force: true });
     console.log('[Database] Đồng bộ các bảng thành công.');
 
     // 2. Seed Users
@@ -23,7 +28,7 @@ export async function seedDatabase() {
           id: u.id,
           name: u.name,
           email: u.email,
-          password: hashPassword('password123'), // Mật khẩu mặc định cho tất cả user
+          password: await hashPassword('12345678'), // Mật khẩu mặc định cho tất cả user
           role: u.role,
           department: u.department || 'Công Nghệ Thông Tin',
           major: u.major || '',
@@ -77,7 +82,9 @@ export async function seedDatabase() {
           subject: q.subject,
           isSolved: q.isSolved || false,
           status: q.status || 'active',
-          createdAt: q.createdAt ? new Date(q.createdAt.split('/').reverse().join('-')) : new Date(),
+          createdAt: q.createdAt
+            ? new Date(q.createdAt.split('/').reverse().join('-'))
+            : new Date(),
         });
 
         // Liên kết các tag

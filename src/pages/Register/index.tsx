@@ -16,7 +16,7 @@ import styles from './index.less';
 export default function Register() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-  const [role, setRole] = useState('student');
+  const [role, setRole] = useState('sinhvien');
 
   const handleSubmit = async (values: any) => {
     if (!values.terms) {
@@ -153,21 +153,21 @@ export default function Register() {
                     message: 'Vui lòng chọn vai trò',
                   },
                 ]}
-                initialValue="student"
+                initialValue="sinhvien"
               >
                 <Select
                   size="large"
                   onChange={setRole}
                   options={[
-                    { label: 'Sinh viên', value: 'student' },
-                    { label: 'Giảng viên', value: 'teacher' },
+                    { label: 'Sinh viên', value: 'sinhvien' },
+                    { label: 'Giảng viên', value: 'giangvien' },
                   ]}
                   className={styles.input}
                 />
               </Form.Item>
 
               {/* Department - Only for students */}
-              {role === 'student' && (
+              {role === 'sinhvien' && (
                 <Form.Item
                   name="department"
                   rules={[
@@ -200,15 +200,15 @@ export default function Register() {
                     message: 'Vui lòng nhập mật khẩu',
                   },
                   {
-                    min: 8,
-                    message: 'Mật khẩu phải có ít nhất 8 ký tự',
+                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+                    message: 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm: chữ hoa, chữ thường, số',
                   },
                 ]}
               >
                 <Input.Password
                   size="large"
                   prefix={<LockOutlined />}
-                  placeholder="Mật khẩu (tối thiểu 8 ký tự)"
+                  placeholder="Mật khẩu (8+ ký tự: hoa, thường, số)"
                   className={styles.input}
                 />
               </Form.Item>

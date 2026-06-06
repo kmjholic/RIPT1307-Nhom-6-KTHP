@@ -72,6 +72,11 @@ export default function CreatePost() {
       return;
     }
 
+    if (content.trim().length < 10) {
+      message.error('Nội dung phải có ít nhất 10 ký tự');
+      return;
+    }
+
     const currentUser = authUtils.getCurrentUser();
     if (!currentUser) {
       message.error('Vui lòng đăng nhập để đăng bài');
@@ -81,7 +86,7 @@ export default function CreatePost() {
 
     setLoading(true);
     try {
-      const res = await request<{ success: boolean; message?: string }>('/api/posts', {
+      const res = await request<{ success: boolean; message?: string; errors?: any[] }>('/api/posts', {
         method: 'POST',
         data: {
           title: values.title,
@@ -98,7 +103,12 @@ export default function CreatePost() {
           history.push('/forum');
         }, 1000);
       } else {
-        message.error(res?.message || 'Đăng bài thất bại');
+        if (res?.errors && Array.isArray(res.errors)) {
+          const errorMsg = res.errors.map((e: any) => e.message).join(', ');
+          message.error(errorMsg || 'Đăng bài thất bại');
+        } else {
+          message.error(res?.message || 'Đăng bài thất bại');
+        }
       }
     } catch (error: any) {
       message.error(error.message || 'Đã xảy ra lỗi, vui lòng thử lại');
@@ -126,8 +136,12 @@ export default function CreatePost() {
                 message: 'Vui lòng nhập tiêu đề',
               },
               {
-                min: 10,
-                message: 'Tiêu đề phải có ít nhất 10 ký tự',
+                min: 5,
+                message: 'Tiêu đề phải có ít nhất 5 ký tự',
+              },
+              {
+                max: 200,
+                message: 'Tiêu đề không được vượt quá 200 ký tự',
               },
             ]}
           >

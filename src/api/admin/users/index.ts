@@ -38,7 +38,7 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         name,
         email,
         password: hashPassword(password),
-        role: role || 'student',
+        role: role || 'sinhvien',
         department: department || 'CNTT',
         studentId: studentId || '',
         reputation: 10,

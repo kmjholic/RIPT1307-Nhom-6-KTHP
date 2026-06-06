@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Space, Tag, Tabs } from 'antd';
+import { Button, Space, Tag, Tabs, Pagination } from 'antd';
 import {
   FireOutlined,
   ClockCircleOutlined,
@@ -16,6 +16,13 @@ import styles from './index.less';
 
 const mockPosts = MOCK_QUESTIONS;
 
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 export default function Forum() {
   const [searchParams] = useSearchParams();
   const tagParam = searchParams.get('tag') || '';
@@ -26,6 +33,12 @@ export default function Forum() {
   const [loading, setLoading] = useState(false);
   const [topContributors, setTopContributors] = useState<any[]>([]);
   const [trendingTags, setTrendingTags] = useState<any[]>([]);
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+  });
 
   useEffect(() => {
     const fetchSidebarData = async () => {
@@ -59,12 +72,14 @@ export default function Forum() {
       setLoading(true);
       try {
         const apiSort = activeFilter === 'hot' ? 'views' : activeFilter === 'votes' ? 'votes' : '';
-        const res = await request<{ success: boolean; data: { list: any[] } }>('/api/posts', {
+        const res = await request<{ success: boolean; data: { list: any[]; pagination: PaginationInfo } }>('/api/posts', {
           method: 'GET',
           params: {
             tag: tagParam,
             q: queryParam,
             sort: apiSort,
+            page: pagination.page,
+            limit: pagination.limit,
           },
         });
         if (res && res.success) {
@@ -73,6 +88,11 @@ export default function Forum() {
             list = list.filter((p: any) => !p.isSolved);
           }
           setActivePosts(list);
+          
+          // Update pagination info from response
+          if (res.data.pagination) {
+            setPagination(res.data.pagination);
+          }
         }
       } catch (error) {
         console.error('Lỗi tải danh sách bài viết từ database:', error);
@@ -81,10 +101,15 @@ export default function Forum() {
       }
     };
     fetchPosts();
-  }, [tagParam, queryParam, activeFilter]);
+  }, [tagParam, queryParam, activeFilter, pagination.page, pagination.limit]);
 
   const handleFilter = (key: string) => {
     setActiveFilter(key);
+    setPagination({ ...pagination, page: 1 }); // Reset to first page when filter changes
+  };
+
+  const handlePageChange = (page: number) => {
+    setPagination({ ...pagination, page });
   };
 
 
@@ -148,6 +173,17 @@ export default function Forum() {
               </div>
             ))}
           </div>
+
+          {/* Pagination */}
+          <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'center' }}>
+            <Pagination
+              current={pagination.page}
+              pageSize={pagination.limit}
+              total={pagination.total}
+              onChange={handlePageChange}
+              disabled={loading}
+            />
+          </div>
         </div>
 
         {/* Right Sidebar */}
@@ -172,7 +208,7 @@ export default function Forum() {
                   <div className={styles.contributorInfo}>
                     <div className={styles.contributorName}>{user.name}</div>
                     <div className={styles.contributorRole}>
-                      {user.role === 'teacher' ? 'Giảng viên' : 'Sinh viên'}
+                      {user.role === 'giangvien' ? 'Giảng viên' : 'Sinh viên'}
                     </div>
                   </div>
                   <div className={styles.contributorRep}>

@@ -5,7 +5,7 @@ export interface Question {
   content?: string;
   author: string;
   authorId?: string;
-  authorRole?: 'student' | 'teacher' | 'admin';
+  authorRole?: 'sinhvien' | 'giangvien' | 'admin';
   authorRep?: number;
   tags: string[];
   votes: number;

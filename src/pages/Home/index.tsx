@@ -248,7 +248,7 @@ export default function Home() {
               <div className={styles.contributorAvatar}>{user.name.charAt(0)}</div>
               <div className={styles.contributorName}>{user.name}</div>
               <div className={styles.contributorRole}>
-                {user.role === 'teacher' ? 'Giảng viên' : user.role === 'admin' ? 'Quản trị viên' : `Sinh viên ${user.department || ''}`}
+                {user.role === 'giangvien' ? 'Giảng viên' : user.role === 'admin' ? 'Quản trị viên' : `Sinh viên ${user.department || ''}`}
               </div>
               <div className={styles.contributorRep}>
                 {(user.reputation ?? 0).toLocaleString('vi')} pts

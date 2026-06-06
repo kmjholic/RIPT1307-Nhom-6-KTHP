@@ -78,8 +78,8 @@ export default function Leaderboard() {
         <div className={styles.roleFilter}>
           {[
             { key: 'all', label: 'Tất Cả' },
-            { key: 'student', label: 'Sinh Viên' },
-            { key: 'teacher', label: 'Giảng Viên' },
+            { key: 'sinhvien', label: 'Sinh Viên' },
+            { key: 'giangvien', label: 'Giảng Viên' },
           ].map((opt) => (
             <button
               key={opt.key}
@@ -104,7 +104,7 @@ export default function Leaderboard() {
               {top3[1].name.charAt(0)}
             </div>
             <div className={styles.podiumName}>{top3[1].name}</div>
-            <div className={styles.podiumRole}>{top3[1].role === 'teacher' ? 'Giảng viên' : 'Sinh viên'} · {top3[1].dept}</div>
+            <div className={styles.podiumRole}>{top3[1].role === 'giangvien' ? 'Giảng viên' : 'Sinh viên'} · {top3[1].dept}</div>
             <div className={styles.podiumRep} style={{ color: '#94a3b8' }}>{top3[1].rep.toLocaleString('vi')} pts</div>
             <div className={styles.podiumBase} style={{ background: '#c0c0c0', height: 80 }}>
               <span>#2</span>
@@ -120,7 +120,7 @@ export default function Leaderboard() {
               {top3[0].name.charAt(0)}
             </div>
             <div className={styles.podiumName}>{top3[0].name}</div>
-            <div className={styles.podiumRole}>{top3[0].role === 'teacher' ? 'Giảng viên' : 'Sinh viên'} · {top3[0].dept}</div>
+            <div className={styles.podiumRole}>{top3[0].role === 'giangvien' ? 'Giảng viên' : 'Sinh viên'} · {top3[0].dept}</div>
             <div className={styles.podiumRep} style={{ color: '#f59e0b' }}>{top3[0].rep.toLocaleString('vi')} pts</div>
             <div className={styles.podiumBase} style={{ background: '#ffd700', height: 120 }}>
               <span>#1</span>
@@ -136,7 +136,7 @@ export default function Leaderboard() {
               {top3[2].name.charAt(0)}
             </div>
             <div className={styles.podiumName}>{top3[2].name}</div>
-            <div className={styles.podiumRole}>{top3[2].role === 'teacher' ? 'Giảng viên' : 'Sinh viên'} · {top3[2].dept}</div>
+            <div className={styles.podiumRole}>{top3[2].role === 'giangvien' ? 'Giảng viên' : 'Sinh viên'} · {top3[2].dept}</div>
             <div className={styles.podiumRep} style={{ color: '#d97706' }}>{top3[2].rep.toLocaleString('vi')} pts</div>
             <div className={styles.podiumBase} style={{ background: '#cd7f32', height: 60 }}>
               <span>#3</span>
@@ -161,14 +161,13 @@ export default function Leaderboard() {
               )}
             </div>
 
-            <div className={styles.rankAvatar} style={{ background: user.role === 'teacher' ? '#6366f1' : 'var(--color-primary)' }}>
+            <div className={styles.rankAvatar} style={{ background: user.role === 'giangvien' ? '#6366f1' : 'var(--color-primary)' }}>
               {user.name.charAt(0)}
             </div>
-
             <div className={styles.rankInfo}>
               <div className={styles.rankName}>{user.name}</div>
               <div className={styles.rankMeta}>
-                <span>{user.role === 'teacher' ? 'Giảng viên' : 'Sinh viên'}</span>
+                <span>{user.role === 'giangvien' ? 'Giảng viên' : 'Sinh viên'}</span>
                 <span>·</span>
                 <span>{user.dept}</span>
                 <span>·</span>

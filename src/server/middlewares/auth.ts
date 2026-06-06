@@ -19,7 +19,7 @@ export function parseToken(token: string | undefined): AuthContext | null {
   const raw = token.replace(/^Bearer\s+/i, '');
   const match = /^mock_token_(.+)$/.exec(raw);
   if (!match) return null;
-  return { userId: match[1], role: 'student', token: raw };
+  return { userId: match[1], role: 'sinhvien', token: raw };
 }
 
 export function getTokenFromRequest(req: RequestLike): string | undefined {

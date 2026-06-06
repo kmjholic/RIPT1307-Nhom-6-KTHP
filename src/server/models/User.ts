@@ -1,6 +1,6 @@
-import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
-export type UserRole = 'student' | 'teacher' | 'admin';
+export type UserRole = 'sinhvien' | 'giangvien' | 'admin';
 
 export interface User {
   id: string;
@@ -27,11 +27,21 @@ export function isAdmin(user: Pick<User, 'role'> | null | undefined): boolean {
   return user?.role === 'admin';
 }
 
-export function hashPassword(plain: string): string {
-  return crypto.createHash('sha256').update(plain).digest('hex');
+export async function hashPassword(plain: string): Promise<string> {
+  // Sử dụng bcryptjs đúng cách: truyền rounds trực tiếp
+  // bcryptjs sẽ tự động tạo salt và hash
+  return bcrypt.hash(plain, 10);
 }
 
-export function verifyPassword(plain: string, hash?: string): boolean {
+export async function verifyPassword(
+  plain: string,
+  hash?: string,
+): Promise<boolean> {
   if (!hash) return false;
-  return hashPassword(plain) === hash;
+  try {
+    return await bcrypt.compare(plain, hash);
+  } catch (error) {
+    console.error('[Password Verify] Lỗi so sánh mật khẩu:', error);
+    return false;
+  }
 }

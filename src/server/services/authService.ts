@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import { UserEntity } from '../models/entities';
 import { hashPassword, verifyPassword } from '../models/User';
 import { initDatabase } from '../db';
@@ -22,8 +23,20 @@ export interface AuthResult {
   token: string;
 }
 
-function createToken(userId: string): string {
-  return `mock_token_${userId}`;
+const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key-change-in-production';
+const JWT_EXPIRATION = '7d';
+
+export function createToken(userId: string): string {
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
+}
+
+export function verifyToken(token: string): { userId: string } | null {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    return decoded;
+  } catch (error) {
+    return null;
+  }
 }
 
 export async function login(input: LoginInput): Promise<AuthResult> {
@@ -36,7 +49,7 @@ export async function login(input: LoginInput): Promise<AuthResult> {
     if (found.status === 'banned') {
       throw new Error('Tài khoản của bạn đã bị khóa bởi quản trị viên');
     }
-    if (verifyPassword(password, found.password)) {
+    if (await verifyPassword(password, found.password)) {
       // Map về interface User để trả về client
       const userObj: User = {
         id: found.id,
@@ -74,11 +87,13 @@ export async function register(input: RegisterInput): Promise<AuthResult> {
     throw new Error('Email này đã được đăng ký sử dụng');
   }
 
+  const hashedPassword = await hashPassword(input.password);
+
   const newUser = await UserEntity.create({
     id: Date.now().toString(),
     name: input.name,
     email: input.email,
-    password: hashPassword(input.password),
+    password: hashedPassword,
     role: input.role,
     department: input.department || 'CNTT',
     studentId: input.studentId || '',

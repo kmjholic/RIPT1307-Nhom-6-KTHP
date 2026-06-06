@@ -1,5 +1,6 @@
 import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 import { register } from '@/server/services/authService';
+import { validateRegisterInput } from '@/utils/validation';
 import type { UserRole } from '@/server/models/User';
 
 export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
@@ -10,13 +11,21 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
   try {
     const { name, email, password, role, department, studentId } = req.body ?? {};
+
+    // Validate input
+    const validation = validateRegisterInput({ name, email, password, role });
+    if (!validation.isValid) {
+      res.status(400).json({ success: false, message: 'Validation failed', errors: validation.errors });
+      return;
+    }
+
     const result = await register({
-      name,
-      email,
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
       password,
-      role: (role as UserRole) || 'student',
+      role: (role as UserRole) || 'sinhvien',
       department,
-      studentId,
+      studentId: studentId || '',
     });
     res.status(201).json({ success: true, data: result });
   } catch (error: unknown) {
