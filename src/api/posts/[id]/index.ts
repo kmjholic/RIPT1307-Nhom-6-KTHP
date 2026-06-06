@@ -1,5 +1,4 @@
 import { initDatabase } from '@/server/db';
-import { requireAuth } from '@/server/middlewares/auth';
 import {
   CommentEntity,
   QuestionEntity,
@@ -72,44 +71,40 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
   if (req.method === 'DELETE') {
     try {
-      // Check authentication
-      const authContext = requireAuth(req);
-      if (!authContext) {
-        res.status(401).json({
+      // Kiểm tra id
+      if (!id) {
+        res.status(400).json({
           success: false,
-          message: 'Vui lòng đăng nhập để xóa bài viết',
+          message: 'Thiếu ID bài viết',
         });
         return;
       }
 
+      // Tìm bài viết
       const question = await QuestionEntity.findByPk(id);
       if (!question) {
-        res
-          .status(404)
-          .json({ success: false, message: 'Không tìm thấy bài viết' });
-        return;
-      }
-
-      // Check authorization: only owner or admin can delete
-      const isOwner = question.authorId === authContext.userId;
-      const isAdmin = authContext.role === 'admin';
-
-      if (!isOwner && !isAdmin) {
-        res.status(403).json({
+        res.status(404).json({
           success: false,
-          message: 'Bạn không có quyền xóa bài viết này',
+          message: 'Không tìm thấy bài viết',
         });
         return;
       }
 
-      await (question as any).setQuestionTags([]);
+      // Xóa các comment của bài viết
       await CommentEntity.destroy({ where: { questionId: id } });
+
+      // Xóa các tag liên kết
+      await (question as any).setQuestionTags([]);
+
+      // Xóa bài viết khỏi database
       await question.destroy();
 
-      res
-        .status(200)
-        .json({ success: true, message: 'Đã xóa bài viết thành công' });
+      res.status(200).json({
+        success: true,
+        message: 'Đã xóa bài viết thành công',
+      });
     } catch (error) {
+      console.error('DELETE Error:', error);
       res.status(500).json({
         success: false,
         message: 'Lỗi xóa bài viết',

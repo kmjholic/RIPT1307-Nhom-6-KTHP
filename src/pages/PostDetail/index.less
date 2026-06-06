@@ -84,7 +84,9 @@
     cursor: pointer;
     font-size: 14px;
 
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   .roleBadge {
@@ -96,7 +98,8 @@
     color: var(--text-tertiary);
   }
 
-  .timestamp, .viewCount {
+  .timestamp,
+  .viewCount {
     font-size: 13px;
     color: var(--text-tertiary);
   }
@@ -122,7 +125,10 @@
   color: var(--text-primary);
   margin: 0 0 16px;
 
-  strong { color: var(--text-primary); font-weight: 700; }
+  strong {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
 }
 
 .codeWrapper {
@@ -172,7 +178,9 @@
   margin: 0;
   white-space: pre;
 
-  code { font-family: inherit; }
+  code {
+    font-family: inherit;
+  }
 }
 
 .tagRow {
@@ -223,8 +231,13 @@
   align-items: center;
   transition: color 0.2s;
 
-  &:hover, &.active { color: var(--color-primary); }
-  &.activeDown { color: #3b82f6; }
+  &:hover,
+  &.active {
+    color: var(--color-primary);
+  }
+  &.activeDown {
+    color: #3b82f6;
+  }
 }
 
 .voteCount {
@@ -333,7 +346,10 @@
     justify-content: center;
     transition: all 0.2s;
 
-    &:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    &:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
   }
 
   .smallVoteNum {
@@ -349,7 +365,10 @@
   }
 }
 
-.answerContent { flex: 1; min-width: 0; }
+.answerContent {
+  flex: 1;
+  min-width: 0;
+}
 
 .answerMeta {
   display: flex;
@@ -363,10 +382,14 @@
     color: var(--color-primary);
     cursor: pointer;
     font-size: 14px;
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
-  .roleBadge { font-size: 14px; }
+  .roleBadge {
+    font-size: 14px;
+  }
 
   .repBadge {
     background: #fef3c7;
@@ -377,9 +400,14 @@
     font-weight: 600;
   }
 
-  .metaDot { color: var(--text-tertiary); }
+  .metaDot {
+    color: var(--text-tertiary);
+  }
 
-  .timestamp { font-size: 12px; color: var(--text-tertiary); }
+  .timestamp {
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
 }
 
 .answerText {
@@ -399,7 +427,10 @@
     padding: 4px 8px;
     border-radius: 6px;
     transition: all 0.2s;
-    &:hover { background: var(--bg-secondary); color: var(--text-primary); }
+    &:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
   }
 
   .selectBestBtn {
@@ -415,7 +446,9 @@
     font-weight: 600;
     padding: 4px 12px;
     transition: all 0.2s;
-    &:hover { background: #f0fdf4; }
+    &:hover {
+      background: #f0fdf4;
+    }
   }
 }
 
@@ -434,14 +467,24 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
+  margin-left: 32px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border-color);
 
   .replyContent {
     font-size: 13px;
     line-height: 1.6;
 
-    .replyAuthor { font-weight: 700; color: var(--color-primary); }
-    .replyText { color: var(--text-primary); }
-    .replyTime { color: var(--text-tertiary); }
+    .replyAuthor {
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .replyText {
+      color: var(--text-primary);
+    }
+    .replyTime {
+      color: var(--text-tertiary);
+    }
   }
 }
 
@@ -494,7 +537,10 @@
     color: var(--text-secondary);
     font-weight: 600;
     transition: all 0.15s;
-    &:hover { background: var(--bg-tertiary); border-color: var(--text-tertiary); }
+    &:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--text-tertiary);
+    }
   }
 }
 
@@ -512,8 +558,12 @@
   outline: none;
   transition: border-color 0.2s;
 
-  &:focus { border-color: var(--color-primary); }
-  &::placeholder { color: var(--text-tertiary); }
+  &:focus {
+    border-color: var(--color-primary);
+  }
+  &::placeholder {
+    color: var(--text-tertiary);
+  }
 }
 
 .answerFormActions {
@@ -525,5 +575,73 @@
   .charCount {
     font-size: 12px;
     color: var(--text-tertiary);
+  }
+}
+
+// Reply Form
+.replyForm {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.replyTextarea {
+  flex: 1;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  font-family: inherit;
+  resize: none;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+  min-height: 36px;
+
+  &:focus {
+    border-color: var(--color-primary);
+  }
+  &::placeholder {
+    color: var(--text-tertiary);
+  }
+}
+
+// Vote styling
+.active {
+  color: #1890ff !important;
+}
+
+.activeSmall {
+  color: #1890ff !important;
+
+  &.down {
+    color: #ff4d4f !important;
+  }
+}
+
+.replyVoteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+
+  &:hover {
+    color: var(--color-primary);
+  }
+
+  &.active {
+    color: #1890ff;
+  }
+
+  &.activeDown {
+    color: #ff4d4f;
   }
 }

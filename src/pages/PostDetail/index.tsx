@@ -19,20 +19,32 @@ import styles from './index.less';
 
 const DEFAULT_QUESTION_ID = '1';
 
+// Helper: get vote state (up/down/none)
+const getVoteState = (userId: string, allVotes: any[], targetId: string) => {
+  const vote = allVotes.find(
+    (v) => v.userId === userId && v.targetId === targetId,
+  );
+  if (!vote) return 'none';
+  return vote.value === 1 ? 'up' : 'down';
+};
+
 export default function PostDetail() {
   const { id: routeId } = useParams<{ id: string }>();
   const questionId = routeId || DEFAULT_QUESTION_ID;
 
   const [post, setPost] = useState<any>(null);
   const [answers, setAnswers] = useState<any[]>([]);
+  const [allVotes, setAllVotes] = useState<any[]>([]); // Track all votes
   const [loading, setLoading] = useState(true);
 
   const currentUser = authUtils.getCurrentUser();
-  const [isLiked, setIsLiked] = useState(false);
-  const [isDisliked, setIsDisliked] = useState(false);
   const [votes, setVotes] = useState(0);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [newAnswer, setNewAnswer] = useState('');
+
+  // Reply state tracking
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState('');
 
   const fetchPostData = async () => {
     setLoading(true);
@@ -59,6 +71,17 @@ export default function PostDetail() {
       if (resComments && resComments.success) {
         setAnswers(resComments.data);
       }
+
+      // Fetch votes
+      const resVotes = await request<{ success: boolean; data: any[] }>(
+        `/api/posts/${questionId}/vote`,
+        {
+          method: 'GET',
+        },
+      );
+      if (resVotes && resVotes.success) {
+        setAllVotes(resVotes.data);
+      }
     } catch (error) {
       console.error('Lỗi tải chi tiết bài viết:', error);
     } finally {
@@ -72,13 +95,27 @@ export default function PostDetail() {
 
   const isOwner = currentUser?.id === post?.authorId;
 
+  // Vote handler: single state logic
   const handleVote = async (type: 'up' | 'down') => {
     if (!currentUser) {
       message.warning('Vui lòng đăng nhập để vote');
       history.push('/login');
       return;
     }
-    const val = type === 'up' ? 1 : -1;
+
+    const currentState = getVoteState(currentUser.id, allVotes, questionId);
+    const voteValue = type === 'up' ? 1 : -1;
+
+    // Determine new state after click
+    let newState = 'none';
+    if (currentState === 'none') {
+      newState = type === 'up' ? 'up' : 'down';
+    } else if (currentState === type) {
+      newState = 'none'; // Click same = remove vote
+    } else {
+      newState = type === 'up' ? 'up' : 'down'; // Switch
+    }
+
     try {
       const res = await request<{ success: boolean; data: { votes: number } }>(
         `/api/posts/${questionId}/vote`,
@@ -88,27 +125,24 @@ export default function PostDetail() {
             targetType: 'question',
             targetId: questionId,
             userId: currentUser.id,
-            value: val,
+            value: voteValue,
           },
         },
       );
       if (res && res.success) {
         setVotes(res.data.votes);
-        if (type === 'up') {
-          if (!isLiked) {
-            setIsLiked(true);
-            setIsDisliked(false);
-          } else {
-            setIsLiked(false);
-          }
-        } else {
-          if (!isDisliked) {
-            setIsDisliked(true);
-            setIsLiked(false);
-          } else {
-            setIsDisliked(false);
-          }
+        // Update vote list
+        const newVotes = allVotes.filter(
+          (v) => !(v.userId === currentUser.id && v.targetId === questionId),
+        );
+        if (newState !== 'none') {
+          newVotes.push({
+            userId: currentUser.id,
+            targetId: questionId,
+            value: voteValue,
+          });
         }
+        setAllVotes(newVotes);
         message.success('Đã cập nhật vote!');
       }
     } catch (err: any) {
@@ -116,13 +150,27 @@ export default function PostDetail() {
     }
   };
 
+  // Vote handler for comments
   const handleCommentVote = async (commentId: string, type: 'up' | 'down') => {
     if (!currentUser) {
       message.warning('Vui lòng đăng nhập để vote');
       history.push('/login');
       return;
     }
-    const val = type === 'up' ? 1 : -1;
+
+    const currentState = getVoteState(currentUser.id, allVotes, commentId);
+    const voteValue = type === 'up' ? 1 : -1;
+
+    // Determine new state
+    let newState = 'none';
+    if (currentState === 'none') {
+      newState = type === 'up' ? 'up' : 'down';
+    } else if (currentState === type) {
+      newState = 'none';
+    } else {
+      newState = type === 'up' ? 'up' : 'down';
+    }
+
     try {
       const res = await request<{ success: boolean; data: { votes: number } }>(
         `/api/posts/${questionId}/vote`,
@@ -132,16 +180,41 @@ export default function PostDetail() {
             targetType: 'comment',
             targetId: commentId,
             userId: currentUser.id,
-            value: val,
+            value: voteValue,
           },
         },
       );
       if (res && res.success) {
+        // Update answers votes
         setAnswers(
-          answers.map((ans) =>
-            ans.id === commentId ? { ...ans, votes: res.data.votes } : ans,
-          ),
+          answers.map((ans) => {
+            if (ans.id === commentId) {
+              return { ...ans, votes: res.data.votes };
+            }
+            if (ans.replies) {
+              return {
+                ...ans,
+                replies: ans.replies.map((r: any) =>
+                  r.id === commentId ? { ...r, votes: res.data.votes } : r,
+                ),
+              };
+            }
+            return ans;
+          }),
         );
+
+        // Update vote list
+        const newVotes = allVotes.filter(
+          (v) => !(v.userId === currentUser.id && v.targetId === commentId),
+        );
+        if (newState !== 'none') {
+          newVotes.push({
+            userId: currentUser.id,
+            targetId: commentId,
+            value: voteValue,
+          });
+        }
+        setAllVotes(newVotes);
         message.success('Đã cập nhật vote!');
       }
     } catch (err: any) {
@@ -210,6 +283,52 @@ export default function PostDetail() {
     }
   };
 
+  // Handle reply submit
+  const handleSubmitReply = async (parentCommentId: string) => {
+    if (!replyContent.trim()) {
+      message.warning('Vui lòng nhập nội dung trả lời');
+      return;
+    }
+    if (!currentUser) {
+      message.warning('Vui lòng đăng nhập để trả lời');
+      history.push('/login');
+      return;
+    }
+    try {
+      const res = await request<{ success: boolean; data: any }>(
+        `/api/posts/${questionId}/comments`,
+        {
+          method: 'POST',
+          data: {
+            content: replyContent,
+            authorId: currentUser.id,
+            parentId: parentCommentId,
+          },
+        },
+      );
+      if (res && res.success) {
+        // Update answers with new reply
+        setAnswers(
+          answers.map((ans) =>
+            ans.id === parentCommentId
+              ? {
+                  ...ans,
+                  replies: ans.replies
+                    ? [...ans.replies, res.data]
+                    : [res.data],
+                }
+              : ans,
+          ),
+        );
+        setReplyContent('');
+        setReplyingTo(null);
+        message.success('Trả lời đã được đăng!');
+      }
+    } catch (error: any) {
+      message.error(error.message || 'Không thể đăng trả lời');
+    }
+  };
+
   const handleDelete = async () => {
     if (!currentUser) {
       message.warning('Vui lòng đăng nhập để xóa bài viết');
@@ -223,7 +342,6 @@ export default function PostDetail() {
     }
 
     try {
-      // Ask for confirmation
       const confirmed = window.confirm(
         'Bạn chắc chắn muốn xóa bài viết này? Thao tác này không thể hoàn tác.',
       );
@@ -231,10 +349,13 @@ export default function PostDetail() {
         return;
       }
 
+      const token = authUtils.getToken();
+
       const res = await request<{ success: boolean; message: string }>(
         `/api/posts/${questionId}`,
         {
           method: 'DELETE',
+          headers: token ? { Authorization: token } : undefined,
         },
       );
       if (res && res.success) {
@@ -253,6 +374,11 @@ export default function PostDetail() {
   const sortedAnswers = [...answers].sort(
     (a, b) => (b.isBest ? 1 : 0) - (a.isBest ? 1 : 0),
   );
+
+  // Get vote state for UI
+  const postVoteState = currentUser
+    ? getVoteState(currentUser.id, allVotes, questionId)
+    : 'none';
 
   if (loading || !post) {
     return (
@@ -370,19 +496,27 @@ export default function PostDetail() {
         <div className={styles.questionActions}>
           <div className={styles.voteGroup}>
             <button
-              className={`${styles.voteBtn} ${isLiked ? styles.active : ''}`}
+              className={`${styles.voteBtn} ${
+                postVoteState === 'up' ? styles.active : ''
+              }`}
               onClick={() => handleVote('up')}
+              title="Up vote"
             >
-              {isLiked ? <LikeFilled /> : <LikeOutlined />}
+              {postVoteState === 'up' ? <LikeFilled /> : <LikeOutlined />}
             </button>
             <span className={styles.voteCount}>{votes}</span>
             <button
               className={`${styles.voteBtn} ${
-                isDisliked ? styles.activeDown : ''
+                postVoteState === 'down' ? styles.activeDown : ''
               }`}
               onClick={() => handleVote('down')}
+              title="Down vote"
             >
-              {isDisliked ? <DislikeFilled /> : <DislikeOutlined />}
+              {postVoteState === 'down' ? (
+                <DislikeFilled />
+              ) : (
+                <DislikeOutlined />
+              )}
             </button>
           </div>
           <button
@@ -425,154 +559,258 @@ export default function PostDetail() {
           )}
         </h2>
 
-        {sortedAnswers.map((answer) => (
-          <div
-            key={answer.id}
-            className={`${styles.answerCard} ${
-              answer.isBest ? styles.bestAnswer : ''
-            }`}
-          >
-            {answer.isBest && (
-              <div className={styles.bestBanner}>
-                <CheckCircleFilled /> Câu Trả Lời Hay Nhất
-              </div>
-            )}
+        {sortedAnswers.map((answer) => {
+          const commentVoteState = currentUser
+            ? getVoteState(currentUser.id, allVotes, answer.id)
+            : 'none';
 
-            <div className={styles.answerLayout}>
-              <div className={styles.answerVoteCol}>
-                <button
-                  className={styles.smallVoteBtn}
-                  onClick={() => handleCommentVote(answer.id, 'up')}
-                >
-                  <LikeOutlined />
-                </button>
-                <span className={styles.smallVoteNum}>{answer.votes}</span>
-                <button
-                  className={styles.smallVoteBtn}
-                  onClick={() => handleCommentVote(answer.id, 'down')}
-                >
-                  <DislikeOutlined />
-                </button>
-                {answer.isBest && (
-                  <CheckCircleFilled className={styles.bestIcon} />
-                )}
-              </div>
-
-              <div className={styles.answerContent}>
-                <div className={styles.answerMeta}>
-                  <Avatar
-                    size={28}
-                    style={{
-                      background:
-                        answer.authorRole === 'giangvien'
-                          ? '#6366f1'
-                          : 'var(--color-primary)',
-                    }}
-                  >
-                    {answer.avatar}
-                  </Avatar>
-                  <span
-                    className={styles.authorName}
-                    onClick={() => history.push(`/profile/${answer.authorId}`)}
-                  >
-                    {answer.author}
-                  </span>
-                  <span className={styles.roleBadge}>
-                    {answer.authorRole === 'giangvien' ? 'GV' : 'SV'}
-                  </span>
-                  <span className={styles.repBadge}>⭐ {answer.authorRep}</span>
-                  <span className={styles.metaDot}>·</span>
-                  <span className={styles.timestamp}>{answer.timestamp}</span>
+          return (
+            <div
+              key={answer.id}
+              className={`${styles.answerCard} ${
+                answer.isBest ? styles.bestAnswer : ''
+              }`}
+            >
+              {answer.isBest && (
+                <div className={styles.bestBanner}>
+                  <CheckCircleFilled /> Câu Trả Lời Hay Nhất
                 </div>
+              )}
 
-                <div className={styles.answerText}>
-                  {answer.content &&
-                    answer.content
-                      .split('\n\n')
-                      .map((block: string, i: number) => {
-                        if (block.startsWith('```')) {
-                          const code = block
-                            .replace(/```\w*\n?/, '')
-                            .replace(/```$/, '');
-                          return (
-                            <div key={i} className={styles.codeWrapper}>
-                              <div className={styles.codeHeader}>
-                                <span>Code</span>
-                                <button
-                                  className={styles.copyBtn}
-                                  onClick={() => {
-                                    navigator.clipboard.writeText(code);
-                                    message.success('Đã sao chép!');
-                                  }}
-                                >
-                                  <CopyOutlined /> Sao Chép
-                                </button>
-                              </div>
-                              <pre className={styles.codeBlock}>
-                                <code>{code}</code>
-                              </pre>
-                            </div>
-                          );
-                        }
-                        return (
-                          <p
-                            key={i}
-                            className={styles.contentP}
-                            dangerouslySetInnerHTML={{
-                              __html: block.replace(
-                                /\*\*(.*?)\*\*/g,
-                                '<strong>$1</strong>',
-                              ),
-                            }}
-                          />
-                        );
-                      })}
-                </div>
-
-                <div className={styles.answerActions}>
-                  <button className={styles.replyBtn}>Trả Lời</button>
-                  {isOwner && !answer.isBest && (
-                    <button
-                      className={styles.selectBestBtn}
-                      onClick={() => handleSelectBest(answer.id)}
-                    >
-                      <CheckCircleOutlined /> Chọn Hay Nhất
-                    </button>
+              <div className={styles.answerLayout}>
+                <div className={styles.answerVoteCol}>
+                  <button
+                    className={`${styles.smallVoteBtn} ${
+                      commentVoteState === 'up' ? styles.activeSmall : ''
+                    }`}
+                    onClick={() => handleCommentVote(answer.id, 'up')}
+                    title="Up vote"
+                  >
+                    {commentVoteState === 'up' ? (
+                      <LikeFilled />
+                    ) : (
+                      <LikeOutlined />
+                    )}
+                  </button>
+                  <span className={styles.smallVoteNum}>{answer.votes}</span>
+                  <button
+                    className={`${styles.smallVoteBtn} ${
+                      commentVoteState === 'down' ? styles.activeSmall : ''
+                    }`}
+                    onClick={() => handleCommentVote(answer.id, 'down')}
+                    title="Down vote"
+                  >
+                    {commentVoteState === 'down' ? (
+                      <DislikeFilled />
+                    ) : (
+                      <DislikeOutlined />
+                    )}
+                  </button>
+                  {answer.isBest && (
+                    <CheckCircleFilled className={styles.bestIcon} />
                   )}
                 </div>
 
-                {/* Replies */}
-                {answer.replies && answer.replies.length > 0 && (
-                  <div className={styles.replies}>
-                    {answer.replies.map((reply: any) => (
-                      <div key={reply.id} className={styles.reply}>
-                        <Avatar
-                          size={24}
-                          style={{ background: '#6b7280', flexShrink: 0 }}
-                        >
-                          {reply.author.charAt(0)}
-                        </Avatar>
-                        <div className={styles.replyContent}>
-                          <span className={styles.replyAuthor}>
-                            {reply.author}
-                          </span>
-                          <span className={styles.replyText}>
-                            {' '}
-                            {reply.content}
-                          </span>
-                          <span className={styles.replyTime}>
-                            {' '}
-                            · {reply.timestamp}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                <div className={styles.answerContent}>
+                  <div className={styles.answerMeta}>
+                    <Avatar
+                      size={28}
+                      style={{
+                        background:
+                          answer.authorRole === 'giangvien'
+                            ? '#6366f1'
+                            : 'var(--color-primary)',
+                      }}
+                    >
+                      {answer.avatar}
+                    </Avatar>
+                    <span
+                      className={styles.authorName}
+                      onClick={() =>
+                        history.push(`/profile/${answer.authorId}`)
+                      }
+                    >
+                      {answer.author}
+                    </span>
+                    <span className={styles.roleBadge}>
+                      {answer.authorRole === 'giangvien' ? 'GV' : 'SV'}
+                    </span>
+                    <span className={styles.repBadge}>
+                      ⭐ {answer.authorRep}
+                    </span>
+                    <span className={styles.metaDot}>·</span>
+                    <span className={styles.timestamp}>{answer.timestamp}</span>
                   </div>
-                )}
+
+                  <div className={styles.answerText}>
+                    {answer.content &&
+                      answer.content
+                        .split('\n\n')
+                        .map((block: string, i: number) => {
+                          if (block.startsWith('```')) {
+                            const code = block
+                              .replace(/```\w*\n?/, '')
+                              .replace(/```$/, '');
+                            return (
+                              <div key={i} className={styles.codeWrapper}>
+                                <div className={styles.codeHeader}>
+                                  <span>Code</span>
+                                  <button
+                                    className={styles.copyBtn}
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(code);
+                                      message.success('Đã sao chép!');
+                                    }}
+                                  >
+                                    <CopyOutlined /> Sao Chép
+                                  </button>
+                                </div>
+                                <pre className={styles.codeBlock}>
+                                  <code>{code}</code>
+                                </pre>
+                              </div>
+                            );
+                          }
+                          return (
+                            <p
+                              key={i}
+                              className={styles.contentP}
+                              dangerouslySetInnerHTML={{
+                                __html: block.replace(
+                                  /\*\*(.*?)\*\*/g,
+                                  '<strong>$1</strong>',
+                                ),
+                              }}
+                            />
+                          );
+                        })}
+                  </div>
+
+                  <div className={styles.answerActions}>
+                    <button
+                      className={styles.replyBtn}
+                      onClick={() => setReplyingTo(answer.id)}
+                    >
+                      Trả Lời
+                    </button>
+                    {isOwner && !answer.isBest && (
+                      <button
+                        className={styles.selectBestBtn}
+                        onClick={() => handleSelectBest(answer.id)}
+                      >
+                        <CheckCircleOutlined /> Chọn Hay Nhất
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Reply Input Form */}
+                  {replyingTo === answer.id && (
+                    <div className={styles.replyForm}>
+                      <textarea
+                        className={styles.replyTextarea}
+                        placeholder="Viết trả lời của bạn..."
+                        value={replyContent}
+                        onChange={(e) => setReplyContent(e.target.value)}
+                        rows={3}
+                      />
+                      <div className={styles.replyActions}>
+                        <Button
+                          type="primary"
+                          size="small"
+                          onClick={() => handleSubmitReply(answer.id)}
+                          disabled={!replyContent.trim()}
+                        >
+                          Gửi
+                        </Button>
+                        <Button
+                          size="small"
+                          onClick={() => {
+                            setReplyingTo(null);
+                            setReplyContent('');
+                          }}
+                        >
+                          Hủy
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Replies */}
+                  {answer.replies && answer.replies.length > 0 && (
+                    <div className={styles.replies}>
+                      {answer.replies.map((reply: any) => {
+                        const replyVoteState = currentUser
+                          ? getVoteState(currentUser.id, allVotes, reply.id)
+                          : 'none';
+
+                        return (
+                          <div key={reply.id} className={styles.reply}>
+                            <Avatar
+                              size={24}
+                              style={{ background: '#6b7280', flexShrink: 0 }}
+                            >
+                              {reply.author.charAt(0)}
+                            </Avatar>
+                            <div className={styles.replyContent}>
+                              <span className={styles.replyAuthor}>
+                                {reply.author}
+                              </span>
+                              <span className={styles.replyText}>
+                                {' '}
+                                {reply.content}
+                              </span>
+                              <span className={styles.replyTime}>
+                                {' '}
+                                · {reply.timestamp}
+                              </span>
+                              <div className={styles.replyVotes}>
+                                <button
+                                  className={`${styles.replyVoteBtn} ${
+                                    replyVoteState === 'up' ? styles.active : ''
+                                  }`}
+                                  onClick={() =>
+                                    handleCommentVote(reply.id, 'up')
+                                  }
+                                  title="Up vote"
+                                >
+                                  {replyVoteState === 'up' ? (
+                                    <LikeFilled />
+                                  ) : (
+                                    <LikeOutlined />
+                                  )}
+                                </button>
+                                <span className={styles.replyVoteCount}>
+                                  {reply.votes}
+                                </span>
+                                <button
+                                  className={`${styles.replyVoteBtn} ${
+                                    replyVoteState === 'down'
+                                      ? styles.active
+                                      : ''
+                                  }`}
+                                  onClick={() =>
+                                    handleCommentVote(reply.id, 'down')
+                                  }
+                                  title="Down vote"
+                                >
+                                  {replyVoteState === 'down' ? (
+                                    <DislikeFilled />
+                                  ) : (
+                                    <DislikeOutlined />
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* Answer Form */}
         <div className={styles.answerForm}>

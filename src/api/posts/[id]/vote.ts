@@ -4,7 +4,55 @@ import { VoteEntity, QuestionEntity, CommentEntity, UserEntity } from '@/server/
 
 export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
   await initDatabase();
-  const id = req.query?.id as string;
+  let id = req.query?.id as string;
+
+  // If not in query, try to extract from URL path
+  if (!id && req.url) {
+    const match = req.url.match(/\/api\/posts\/([^/?]+)/);
+    id = match ? match[1] : undefined;
+  }
+
+  if (req.method === 'GET') {
+    try {
+      // Get all votes for this post and its comments
+      const votes = await VoteEntity.findAll({
+        where: {
+          $or: [
+            { targetId: id }, // votes for the post
+            { targetType: 'comment' } // all comment votes (we'll filter by parent later)
+          ]
+        } as any,
+      });
+
+      // Also get comment IDs for this post
+      const comments = await CommentEntity.findAll({
+        where: { questionId: id }
+      });
+      const commentIds = comments.map((c) => c.id);
+
+      // Filter votes to only include those for comments of this post
+      const postVotes = votes.filter(
+        (v) => v.targetId === id || (v.targetType === 'comment' && commentIds.includes(v.targetId))
+      );
+
+      res.status(200).json({
+        success: true,
+        data: postVotes.map((v: any) => ({
+          userId: v.userId,
+          targetId: v.targetId,
+          targetType: v.targetType,
+          value: v.value,
+        })),
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi lấy dữ liệu vote',
+        error: String(error),
+      });
+    }
+    return;
+  }
 
   if (req.method === 'POST') {
     try {
