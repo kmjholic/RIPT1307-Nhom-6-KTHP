@@ -25,7 +25,11 @@ export default function Login() {
       message.success('Đăng nhập thành công!');
       setTimeout(() => history.push('/home'), 500);
     } catch (error: any) {
-      message.error(error.message || 'Đăng nhập thất bại');
+      // Display error message from backend or generic fallback
+      const errorMsg =
+        error?.message || error?.toString?.() || 'Đăng nhập thất bại';
+      message.error(errorMsg);
+      console.error('Login error:', error);
     } finally {
       setLoading(false);
     }

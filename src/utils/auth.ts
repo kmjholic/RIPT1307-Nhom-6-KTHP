@@ -2,9 +2,9 @@
  * Client auth — lưu JWT token và user profile trong localStorage.
  * Gọi API Routes tại /api/auth/* (logic nằm ở src/server + src/api).
  */
-import { request } from '@umijs/max';
-import type { User } from '@/server/models/User';
 import { getDemoCredentials as getDemoAccounts } from '@/constants/demoAccounts';
+import type { User } from '@/server/models/User';
+import { request } from '@umijs/max';
 
 export type { User };
 
@@ -30,8 +30,15 @@ export const authUtils = {
       skipErrorHandler: true,
     });
 
-    if (!res?.success || !res.data) {
-      throw new Error(res?.message || 'Đăng nhập thất bại');
+    // Check if response indicates failure
+    if (!res?.success) {
+      const errorMsg = res?.message || 'Đăng nhập thất bại';
+      throw new Error(errorMsg);
+    }
+
+    // Ensure we have user data and token
+    if (!res.data?.user || !res.data?.token) {
+      throw new Error('Phản hồi từ server không hợp lệ');
     }
 
     persistSession(res.data.user, res.data.token);

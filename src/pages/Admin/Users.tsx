@@ -1,19 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Select, Input, Table, Tag, Avatar, Space, Badge, Modal, Form, Popconfirm, message } from 'antd';
+import { authUtils } from '@/utils/auth';
 import {
-  FileTextOutlined, CommentOutlined,
-  SearchOutlined, LockOutlined, UnlockOutlined, DeleteOutlined, CheckOutlined, EyeOutlined,
-  TrophyOutlined, FireOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  LockOutlined,
+  SearchOutlined,
+  UnlockOutlined,
 } from '@ant-design/icons';
 import { history, request } from '@umijs/max';
+import {
+  Avatar,
+  Badge,
+  Button,
+  Form,
+  Input,
+  Modal,
+  Popconfirm,
+  Select,
+  Space,
+  Table,
+  Tag,
+  message,
+} from 'antd';
+import { useEffect, useState } from 'react';
 import styles from './index.less';
 
 const ROLE_COLORS: Record<string, string> = {
-  sinhvien: 'blue', giangvien: 'purple', admin: 'red',
+  sinhvien: 'blue',
+  giangvien: 'purple',
+  admin: 'red',
 };
 
 const ROLE_LABELS: Record<string, string> = {
-  sinhvien: 'Sinh viên', giangvien: 'Giảng viên', admin: 'Admin',
+  sinhvien: 'Sinh viên',
+  giangvien: 'Giảng viên',
+  admin: 'Admin',
 };
 
 export default function AdminUsers() {
@@ -21,32 +41,46 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [currentAdminId, setCurrentAdminId] = useState<string | null>(null);
 
   // Modal states
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
-  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
+  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] =
+    useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const [addForm] = Form.useForm();
   const [resetForm] = Form.useForm();
 
+  useEffect(() => {
+    const currentUser = authUtils.getCurrentUser();
+    if (currentUser) {
+      setCurrentAdminId(currentUser.id);
+    }
+  }, []);
+
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await request<{ success: boolean; data: { list: any[] } }>('/api/admin/users', {
-        method: 'GET',
-      });
+      const res = await request<{ success: boolean; data: { list: any[] } }>(
+        '/api/admin/users',
+        {
+          method: 'GET',
+        },
+      );
       if (res && res.success) {
-        setUsers(res.data.list.map((u: any) => ({
-          id: u.id,
-          name: u.name,
-          email: u.email,
-          role: u.role,
-          rep: u.reputation,
-          posts: u.posts,
-          status: u.status ?? 'active',
-          joinDate: u.joinDate,
-        })));
+        setUsers(
+          res.data.list.map((u: any) => ({
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            role: u.role,
+            rep: u.reputation,
+            posts: u.posts,
+            status: u.status ?? 'active',
+            joinDate: u.joinDate,
+          })),
+        );
       }
     } catch (error) {
       console.error('Lỗi tải danh sách người dùng:', error);
@@ -61,15 +95,31 @@ export default function AdminUsers() {
   }, []);
 
   const toggleBan = async (id: string, currentStatus: string) => {
+    console.log('Đang gọi ban user với ID:', id);
     const nextStatus = currentStatus === 'active' ? 'banned' : 'active';
     try {
-      const res = await request<{ success: boolean; message?: string }>(`/api/admin/users/${id}`, {
-        method: 'PUT',
-        data: { status: nextStatus },
-      });
+      console.log(
+        'Gửi request PUT đến:',
+        `/api/admin/users/${id}`,
+        'với data:',
+        { status: nextStatus },
+      );
+      const res = await request<{ success: boolean; message?: string }>(
+        `/api/admin/users/${id}`,
+        {
+          method: 'PUT',
+          data: { status: nextStatus },
+        },
+      );
       if (res && res.success) {
-        setUsers(users.map((u) => u.id === id ? { ...u, status: nextStatus } : u));
-        message.success(nextStatus === 'banned' ? 'Đã khóa tài khoản thành công!' : 'Đã mở khóa tài khoản thành công!');
+        setUsers(
+          users.map((u) => (u.id === id ? { ...u, status: nextStatus } : u)),
+        );
+        message.success(
+          nextStatus === 'banned'
+            ? 'Đã khóa tài khoản thành công!'
+            : 'Đã mở khóa tài khoản thành công!',
+        );
       } else {
         message.error(res?.message || 'Thao tác thất bại');
       }
@@ -80,9 +130,12 @@ export default function AdminUsers() {
 
   const deleteUser = async (id: string) => {
     try {
-      const res = await request<{ success: boolean; message?: string }>(`/api/admin/users/${id}`, {
-        method: 'DELETE',
-      });
+      const res = await request<{ success: boolean; message?: string }>(
+        `/api/admin/users/${id}`,
+        {
+          method: 'DELETE',
+        },
+      );
       if (res && res.success) {
         setUsers(users.filter((u) => u.id !== id));
         message.success('Đã xóa tài khoản khỏi cơ sở dữ liệu!');
@@ -96,7 +149,11 @@ export default function AdminUsers() {
 
   const handleAddUser = async (values: any) => {
     try {
-      const res = await request<{ success: boolean; message?: string; data: any }>('/api/admin/users', {
+      const res = await request<{
+        success: boolean;
+        message?: string;
+        data: any;
+      }>('/api/admin/users', {
         method: 'POST',
         data: values,
       });
@@ -116,10 +173,13 @@ export default function AdminUsers() {
   const handleResetPassword = async (values: any) => {
     if (!selectedUserId) return;
     try {
-      const res = await request<{ success: boolean; message?: string }>(`/api/admin/users/${selectedUserId}`, {
-        method: 'PUT',
-        data: { newPassword: values.password },
-      });
+      const res = await request<{ success: boolean; message?: string }>(
+        `/api/admin/users/${selectedUserId}`,
+        {
+          method: 'PATCH',
+          data: { newPassword: values.password },
+        },
+      );
       if (res && res.success) {
         message.success('Cấp lại mật khẩu mới thành công!');
         setIsResetPasswordModalOpen(false);
@@ -133,7 +193,9 @@ export default function AdminUsers() {
   };
 
   const filtered = users.filter((u) => {
-    const matchSearch = u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
+    const matchSearch =
+      u.name.toLowerCase().includes(search.toLowerCase()) ||
+      u.email.toLowerCase().includes(search.toLowerCase());
     const matchRole = roleFilter === 'all' || u.role === roleFilter;
     return matchSearch && matchRole;
   });
@@ -144,7 +206,15 @@ export default function AdminUsers() {
       key: 'user',
       render: (record: any) => (
         <div className={styles.userCell}>
-          <Avatar size={36} style={{ background: record.role === 'giangvien' ? '#6366f1' : 'var(--color-primary)' }}>
+          <Avatar
+            size={36}
+            style={{
+              background:
+                record.role === 'giangvien'
+                  ? '#6366f1'
+                  : 'var(--color-primary)',
+            }}
+          >
             {record.name.charAt(0)}
           </Avatar>
           <div>
@@ -158,14 +228,18 @@ export default function AdminUsers() {
       title: 'Vai Trò',
       dataIndex: 'role',
       key: 'role',
-      render: (role: string) => <Tag color={ROLE_COLORS[role]}>{ROLE_LABELS[role]}</Tag>,
+      render: (role: string) => (
+        <Tag color={ROLE_COLORS[role]}>{ROLE_LABELS[role]}</Tag>
+      ),
     },
     {
       title: 'Uy Tín',
       dataIndex: 'rep',
       key: 'rep',
       sorter: (a: any, b: any) => b.rep - a.rep,
-      render: (rep: number) => <span className={styles.repScore}>{rep.toLocaleString('vi')} pts</span>,
+      render: (rep: number) => (
+        <span className={styles.repScore}>{rep.toLocaleString('vi')} pts</span>
+      ),
     },
     {
       title: 'Bài Viết',
@@ -194,15 +268,22 @@ export default function AdminUsers() {
       key: 'actions',
       render: (record: any) => (
         <Space>
-          <Button size="small" icon={<EyeOutlined />}
-            onClick={() => history.push(`/profile/${record.id}`)}>
+          <Button
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => history.push(`/profile/${record.id}`)}
+          >
             Xem
           </Button>
           <Button
             size="small"
             danger={record.status === 'active'}
             type={record.status === 'active' ? 'default' : 'primary'}
-            icon={record.status === 'active' ? <LockOutlined /> : <UnlockOutlined />}
+            icon={
+              record.status === 'active' ? <LockOutlined /> : <UnlockOutlined />
+            }
+            disabled={record.id === currentAdminId}
+            title={record.id === currentAdminId ? 'Không thể tự khóa mình' : ''}
             onClick={() => toggleBan(record.id, record.status)}
           >
             {record.status === 'active' ? 'Khóa' : 'Mở'}
@@ -234,9 +315,21 @@ export default function AdminUsers() {
 
   const stats = [
     { label: 'Tổng Người Dùng', value: users.length, color: '#3b82f6' },
-    { label: 'Sinh Viên', value: users.filter((u) => u.role === 'sinhvien').length, color: '#10b981' },
-    { label: 'Giảng Viên', value: users.filter((u) => u.role === 'giangvien').length, color: '#8b5cf6' },
-    { label: 'Đã Khóa', value: users.filter((u) => u.status === 'banned').length, color: '#ef4444' },
+    {
+      label: 'Sinh Viên',
+      value: users.filter((u) => u.role === 'sinhvien').length,
+      color: '#10b981',
+    },
+    {
+      label: 'Giảng Viên',
+      value: users.filter((u) => u.role === 'giangvien').length,
+      color: '#8b5cf6',
+    },
+    {
+      label: 'Đã Khóa',
+      value: users.filter((u) => u.status === 'banned').length,
+      color: '#ef4444',
+    },
   ];
 
   return (
@@ -248,7 +341,9 @@ export default function AdminUsers() {
         {stats.map((s, i) => (
           <div key={i} className={styles.miniStat}>
             <div>
-              <div className={styles.miniStatValue} style={{ color: s.color }}>{s.value}</div>
+              <div className={styles.miniStatValue} style={{ color: s.color }}>
+                {s.value}
+              </div>
               <div className={styles.miniStatLabel}>{s.label}</div>
             </div>
           </div>
@@ -274,7 +369,11 @@ export default function AdminUsers() {
           ]}
           style={{ width: 160 }}
         />
-        <Button type="primary" danger onClick={() => setIsAddUserModalOpen(true)}>
+        <Button
+          type="primary"
+          danger
+          onClick={() => setIsAddUserModalOpen(true)}
+        >
           + Thêm Người Dùng
         </Button>
       </div>
@@ -286,7 +385,9 @@ export default function AdminUsers() {
         rowKey="id"
         className={styles.adminTable}
         pagination={{ pageSize: 10, showSizeChanger: false }}
-        rowClassName={(record) => record.status === 'banned' ? styles.bannedRow : ''}
+        rowClassName={(record) =>
+          record.status === 'banned' ? styles.bannedRow : ''
+        }
       />
 
       {/* Add User Modal */}
@@ -300,19 +401,52 @@ export default function AdminUsers() {
         footer={null}
       >
         <Form form={addForm} layout="vertical" onFinish={handleAddUser}>
-          <Form.Item name="name" label="Họ và tên" rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}>
+          <Form.Item
+            name="name"
+            label="Họ và tên"
+            rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}
+          >
             <Input placeholder="Nguyễn Văn A" />
           </Form.Item>
-          <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email', message: 'Vui lòng nhập email hợp lệ' }]}>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[
+              {
+                required: true,
+                type: 'email',
+                message: 'Vui lòng nhập email hợp lệ',
+              },
+            ]}
+          >
             <Input placeholder="example@student.ptit.edu.vn" />
           </Form.Item>
-          <Form.Item name="password" label="Mật khẩu" rules={[{ required: true, min: 6, message: 'Mật khẩu từ 6 ký tự' }]}>
+          <Form.Item
+            name="password"
+            label="Mật khẩu"
+            rules={[{ required: true, min: 6, message: 'Mật khẩu từ 6 ký tự' }]}
+          >
             <Input.Password placeholder="Nhập mật khẩu" />
           </Form.Item>
-          <Form.Item name="role" label="Vai trò" initialValue="sinhvien" rules={[{ required: true }]}>
-            <Select options={[{ label: 'Sinh viên', value: 'sinhvien' }, { label: 'Giảng viên', value: 'giangvien' }, { label: 'Quản trị viên', value: 'admin' }]} />
+          <Form.Item
+            name="role"
+            label="Vai trò"
+            initialValue="sinhvien"
+            rules={[{ required: true }]}
+          >
+            <Select
+              options={[
+                { label: 'Sinh viên', value: 'sinhvien' },
+                { label: 'Giảng viên', value: 'giangvien' },
+                { label: 'Quản trị viên', value: 'admin' },
+              ]}
+            />
           </Form.Item>
-          <Form.Item name="department" label="Khoa/Chuyên ngành" initialValue="CNTT">
+          <Form.Item
+            name="department"
+            label="Khoa/Chuyên ngành"
+            initialValue="CNTT"
+          >
             <Input placeholder="Công Nghệ Thông Tin" />
           </Form.Item>
           <Form.Item name="studentId" label="Mã Sinh viên/Giảng viên">
@@ -321,7 +455,9 @@ export default function AdminUsers() {
           <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
             <Space>
               <Button onClick={() => setIsAddUserModalOpen(false)}>Hủy</Button>
-              <Button type="primary" danger htmlType="submit">Xác nhận</Button>
+              <Button type="primary" danger htmlType="submit">
+                Xác nhận
+              </Button>
             </Space>
           </Form.Item>
         </Form>
@@ -343,15 +479,19 @@ export default function AdminUsers() {
             label="Mật khẩu mới"
             rules={[
               { required: true, message: 'Vui lòng nhập mật khẩu mới' },
-              { min: 6, message: 'Mật khẩu phải từ 6 ký tự' }
+              { min: 6, message: 'Mật khẩu phải từ 6 ký tự' },
             ]}
           >
             <Input.Password placeholder="Nhập mật khẩu mới" />
           </Form.Item>
           <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
             <Space>
-              <Button onClick={() => setIsResetPasswordModalOpen(false)}>Hủy</Button>
-              <Button type="primary" danger htmlType="submit">Cập nhật</Button>
+              <Button onClick={() => setIsResetPasswordModalOpen(false)}>
+                Hủy
+              </Button>
+              <Button type="primary" danger htmlType="submit">
+                Cập nhật
+              </Button>
             </Space>
           </Form.Item>
         </Form>
