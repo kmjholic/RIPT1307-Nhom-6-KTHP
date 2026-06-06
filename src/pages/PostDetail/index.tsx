@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Avatar, Button, Space, Tag, Divider, Form, Input, Tooltip, message } from 'antd';
-import {
-  LikeOutlined, LikeFilled, DislikeOutlined, DislikeFilled,
-  ShareAltOutlined, StarOutlined, StarFilled,
-  CheckCircleFilled, CheckCircleOutlined, ArrowLeftOutlined, CopyOutlined,
-} from '@ant-design/icons';
-import { useParams, history, request } from '@umijs/max';
-import type { Comment } from '@/server/models';
 import { authUtils } from '@/utils/auth';
+import {
+  ArrowLeftOutlined,
+  CheckCircleFilled,
+  CheckCircleOutlined,
+  CopyOutlined,
+  DislikeFilled,
+  DislikeOutlined,
+  LikeFilled,
+  LikeOutlined,
+  ShareAltOutlined,
+  StarFilled,
+  StarOutlined,
+} from '@ant-design/icons';
+import { history, request, useParams } from '@umijs/max';
+import { Avatar, Button, message } from 'antd';
+import { useEffect, useState } from 'react';
 import styles from './index.less';
 
 const DEFAULT_QUESTION_ID = '1';
@@ -30,7 +37,10 @@ export default function PostDetail() {
   const fetchPostData = async () => {
     setLoading(true);
     try {
-      const resPost = await request<{ success: boolean; data: { question: any } }>(`/api/posts/${questionId}`, {
+      const resPost = await request<{
+        success: boolean;
+        data: { question: any };
+      }>(`/api/posts/${questionId}`, {
         method: 'GET',
       });
       if (resPost && resPost.success) {
@@ -40,9 +50,12 @@ export default function PostDetail() {
         message.error('Không tìm thấy bài viết');
       }
 
-      const resComments = await request<{ success: boolean; data: any[] }>(`/api/posts/${questionId}/comments`, {
-        method: 'GET',
-      });
+      const resComments = await request<{ success: boolean; data: any[] }>(
+        `/api/posts/${questionId}/comments`,
+        {
+          method: 'GET',
+        },
+      );
       if (resComments && resComments.success) {
         setAnswers(resComments.data);
       }
@@ -67,15 +80,18 @@ export default function PostDetail() {
     }
     const val = type === 'up' ? 1 : -1;
     try {
-      const res = await request<{ success: boolean; data: { votes: number } }>(`/api/posts/${questionId}/vote`, {
-        method: 'POST',
-        data: {
-          targetType: 'question',
-          targetId: questionId,
-          userId: currentUser.id,
-          value: val,
+      const res = await request<{ success: boolean; data: { votes: number } }>(
+        `/api/posts/${questionId}/vote`,
+        {
+          method: 'POST',
+          data: {
+            targetType: 'question',
+            targetId: questionId,
+            userId: currentUser.id,
+            value: val,
+          },
         },
-      });
+      );
       if (res && res.success) {
         setVotes(res.data.votes);
         if (type === 'up') {
@@ -108,17 +124,24 @@ export default function PostDetail() {
     }
     const val = type === 'up' ? 1 : -1;
     try {
-      const res = await request<{ success: boolean; data: { votes: number } }>(`/api/posts/${questionId}/vote`, {
-        method: 'POST',
-        data: {
-          targetType: 'comment',
-          targetId: commentId,
-          userId: currentUser.id,
-          value: val,
+      const res = await request<{ success: boolean; data: { votes: number } }>(
+        `/api/posts/${questionId}/vote`,
+        {
+          method: 'POST',
+          data: {
+            targetType: 'comment',
+            targetId: commentId,
+            userId: currentUser.id,
+            value: val,
+          },
         },
-      });
+      );
       if (res && res.success) {
-        setAnswers(answers.map(ans => ans.id === commentId ? { ...ans, votes: res.data.votes } : ans));
+        setAnswers(
+          answers.map((ans) =>
+            ans.id === commentId ? { ...ans, votes: res.data.votes } : ans,
+          ),
+        );
         message.success('Đã cập nhật vote!');
       }
     } catch (err: any) {
@@ -128,17 +151,22 @@ export default function PostDetail() {
 
   const handleSelectBest = async (answerId: string) => {
     if (!isOwner) {
-      message.warning('Chỉ người đặt câu hỏi mới có thể chọn câu trả lời hay nhất');
+      message.warning(
+        'Chỉ người đặt câu hỏi mới có thể chọn câu trả lời hay nhất',
+      );
       return;
     }
     try {
-      const res = await request<{ success: boolean }>(`/api/posts/${questionId}/comments`, {
-        method: 'PUT',
-        data: {
-          commentId: answerId,
-          isBest: true,
+      const res = await request<{ success: boolean }>(
+        `/api/posts/${questionId}/comments`,
+        {
+          method: 'PUT',
+          data: {
+            commentId: answerId,
+            isBest: true,
+          },
         },
-      });
+      );
       if (res && res.success) {
         setAnswers(answers.map((a) => ({ ...a, isBest: a.id === answerId })));
         if (post) {
@@ -162,13 +190,16 @@ export default function PostDetail() {
       return;
     }
     try {
-      const res = await request<{ success: boolean; data: any }>(`/api/posts/${questionId}/comments`, {
-        method: 'POST',
-        data: {
-          content: newAnswer,
-          authorId: currentUser.id,
+      const res = await request<{ success: boolean; data: any }>(
+        `/api/posts/${questionId}/comments`,
+        {
+          method: 'POST',
+          data: {
+            content: newAnswer,
+            authorId: currentUser.id,
+          },
         },
-      });
+      );
       if (res && res.success) {
         setAnswers([...answers, res.data]);
         setNewAnswer('');
@@ -179,8 +210,49 @@ export default function PostDetail() {
     }
   };
 
-  const sortedAnswers = [...answers].sort((a, b) => (b.isBest ? 1 : 0) - (a.isBest ? 1 : 0));
+  const handleDelete = async () => {
+    if (!currentUser) {
+      message.warning('Vui lòng đăng nhập để xóa bài viết');
+      history.push('/login');
+      return;
+    }
 
+    if (!isOwner && currentUser.role !== 'admin') {
+      message.error('Bạn không có quyền xóa bài viết này');
+      return;
+    }
+
+    try {
+      // Ask for confirmation
+      const confirmed = window.confirm(
+        'Bạn chắc chắn muốn xóa bài viết này? Thao tác này không thể hoàn tác.',
+      );
+      if (!confirmed) {
+        return;
+      }
+
+      const res = await request<{ success: boolean; message: string }>(
+        `/api/posts/${questionId}`,
+        {
+          method: 'DELETE',
+        },
+      );
+      if (res && res.success) {
+        message.success('Đã xóa bài viết thành công');
+        setTimeout(() => {
+          history.push('/forum');
+        }, 500);
+      } else {
+        message.error(res?.message || 'Không thể xóa bài viết');
+      }
+    } catch (error: any) {
+      message.error(error.message || 'Lỗi xóa bài viết');
+    }
+  };
+
+  const sortedAnswers = [...answers].sort(
+    (a, b) => (b.isBest ? 1 : 0) - (a.isBest ? 1 : 0),
+  );
 
   if (loading || !post) {
     return (
@@ -201,22 +273,31 @@ export default function PostDetail() {
         <div className={styles.questionHeader}>
           <div className={styles.badges}>
             {answers.some((a) => a.isBest) && (
-              <span className={styles.solvedBadge}><CheckCircleFilled /> Đã Giải Quyết</span>
+              <span className={styles.solvedBadge}>
+                <CheckCircleFilled /> Đã Giải Quyết
+              </span>
             )}
-            {post.subject && <span className={styles.subjectBadge}>{post.subject}</span>}
+            {post.subject && (
+              <span className={styles.subjectBadge}>{post.subject}</span>
+            )}
           </div>
           <h1 className={styles.questionTitle}>{post.title}</h1>
           <div className={styles.questionMeta}>
             <Avatar size={32} style={{ background: 'var(--color-primary)' }}>
               {post.author ? post.author.charAt(0) : 'U'}
             </Avatar>
-            <span className={styles.authorName} onClick={() => history.push(`/profile/${post.authorId}`)}>
+            <span
+              className={styles.authorName}
+              onClick={() => history.push(`/profile/${post.authorId}`)}
+            >
               {post.author}
             </span>
             <span className={styles.roleBadge}>
               {post.authorRole === 'giangvien' ? 'Giảng viên' : 'Sinh viên'}
             </span>
-            {post.authorRep !== undefined && <span className={styles.repBadge}>⭐ {post.authorRep}</span>}
+            {post.authorRep !== undefined && (
+              <span className={styles.repBadge}>⭐ {post.authorRep}</span>
+            )}
             <span className={styles.metaDot}>·</span>
             <span className={styles.timestamp}>{post.timestamp}</span>
             <span className={styles.metaDot}>·</span>
@@ -226,59 +307,110 @@ export default function PostDetail() {
 
         {/* Content */}
         <div className={styles.questionContent}>
-          {post.content ? post.content.split('\n\n').map((block: string, i: number) => {
-            if (block.startsWith('```')) {
-              const code = block.replace(/```\w*\n?/, '').replace(/```$/, '');
-              return (
-                <div key={i} className={styles.codeWrapper}>
-                  <div className={styles.codeHeader}>
-                    <span>Code</span>
-                    <button className={styles.copyBtn}
-                      onClick={() => { navigator.clipboard.writeText(code); message.success('Đã sao chép!'); }}>
-                      <CopyOutlined /> Sao Chép
-                    </button>
-                  </div>
-                  <pre className={styles.codeBlock}><code>{code}</code></pre>
-                </div>
-              );
-            }
-            if (block.startsWith('## ')) {
-              return <h2 key={i} className={styles.contentH2}>{block.replace('## ', '')}</h2>;
-            }
-            return <p key={i} className={styles.contentP}
-              dangerouslySetInnerHTML={{ __html: block.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />;
-          }) : null}
+          {post.content
+            ? post.content.split('\n\n').map((block: string, i: number) => {
+                if (block.startsWith('```')) {
+                  const code = block
+                    .replace(/```\w*\n?/, '')
+                    .replace(/```$/, '');
+                  return (
+                    <div key={i} className={styles.codeWrapper}>
+                      <div className={styles.codeHeader}>
+                        <span>Code</span>
+                        <button
+                          className={styles.copyBtn}
+                          onClick={() => {
+                            navigator.clipboard.writeText(code);
+                            message.success('Đã sao chép!');
+                          }}
+                        >
+                          <CopyOutlined /> Sao Chép
+                        </button>
+                      </div>
+                      <pre className={styles.codeBlock}>
+                        <code>{code}</code>
+                      </pre>
+                    </div>
+                  );
+                }
+                if (block.startsWith('## ')) {
+                  return (
+                    <h2 key={i} className={styles.contentH2}>
+                      {block.replace('## ', '')}
+                    </h2>
+                  );
+                }
+                return (
+                  <p
+                    key={i}
+                    className={styles.contentP}
+                    dangerouslySetInnerHTML={{
+                      __html: block.replace(
+                        /\*\*(.*?)\*\*/g,
+                        '<strong>$1</strong>',
+                      ),
+                    }}
+                  />
+                );
+              })
+            : null}
         </div>
 
         {/* Tags */}
         <div className={styles.tagRow}>
-          {post.tags && post.tags.map((tag: string) => (
-            <span key={tag} className={styles.tag}>{tag}</span>
-          ))}
+          {post.tags &&
+            post.tags.map((tag: string) => (
+              <span key={tag} className={styles.tag}>
+                {tag}
+              </span>
+            ))}
         </div>
 
         {/* Actions */}
         <div className={styles.questionActions}>
           <div className={styles.voteGroup}>
-            <button className={`${styles.voteBtn} ${isLiked ? styles.active : ''}`} onClick={() => handleVote('up')}>
+            <button
+              className={`${styles.voteBtn} ${isLiked ? styles.active : ''}`}
+              onClick={() => handleVote('up')}
+            >
               {isLiked ? <LikeFilled /> : <LikeOutlined />}
             </button>
             <span className={styles.voteCount}>{votes}</span>
-            <button className={`${styles.voteBtn} ${isDisliked ? styles.activeDown : ''}`} onClick={() => handleVote('down')}>
+            <button
+              className={`${styles.voteBtn} ${
+                isDisliked ? styles.activeDown : ''
+              }`}
+              onClick={() => handleVote('down')}
+            >
               {isDisliked ? <DislikeFilled /> : <DislikeOutlined />}
             </button>
           </div>
           <button
-            className={`${styles.actionBtn} ${isBookmarked ? styles.bookmarked : ''}`}
+            className={`${styles.actionBtn} ${
+              isBookmarked ? styles.bookmarked : ''
+            }`}
             onClick={() => setIsBookmarked(!isBookmarked)}
           >
             {isBookmarked ? <StarFilled /> : <StarOutlined />}
             {isBookmarked ? 'Đã Lưu' : 'Lưu Bài'}
           </button>
-          <button className={styles.actionBtn}
-            onClick={() => { navigator.clipboard.writeText(window.location.href); message.success('Đã sao chép link!'); }}>
+          <button
+            className={styles.actionBtn}
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+              message.success('Đã sao chép link!');
+            }}
+          >
             <ShareAltOutlined /> Chia Sẻ
           </button>
+          {(isOwner || currentUser?.role === 'admin') && (
+            <button
+              className={`${styles.actionBtn} ${styles.deleteBtn}`}
+              onClick={handleDelete}
+            >
+              Xóa Bài
+            </button>
+          )}
         </div>
       </div>
 
@@ -286,11 +418,20 @@ export default function PostDetail() {
       <div className={styles.answersSection}>
         <h2 className={styles.answersTitle}>
           {sortedAnswers.length} Câu Trả Lời
-          {answers.some((a) => a.isBest) && <span className={styles.solvedInfo}>· Đã có câu trả lời hay nhất</span>}
+          {answers.some((a) => a.isBest) && (
+            <span className={styles.solvedInfo}>
+              · Đã có câu trả lời hay nhất
+            </span>
+          )}
         </h2>
 
         {sortedAnswers.map((answer) => (
-          <div key={answer.id} className={`${styles.answerCard} ${answer.isBest ? styles.bestAnswer : ''}`}>
+          <div
+            key={answer.id}
+            className={`${styles.answerCard} ${
+              answer.isBest ? styles.bestAnswer : ''
+            }`}
+          >
             {answer.isBest && (
               <div className={styles.bestBanner}>
                 <CheckCircleFilled /> Câu Trả Lời Hay Nhất
@@ -299,22 +440,41 @@ export default function PostDetail() {
 
             <div className={styles.answerLayout}>
               <div className={styles.answerVoteCol}>
-                <button className={styles.smallVoteBtn} onClick={() => handleCommentVote(answer.id, 'up')}>
+                <button
+                  className={styles.smallVoteBtn}
+                  onClick={() => handleCommentVote(answer.id, 'up')}
+                >
                   <LikeOutlined />
                 </button>
                 <span className={styles.smallVoteNum}>{answer.votes}</span>
-                <button className={styles.smallVoteBtn} onClick={() => handleCommentVote(answer.id, 'down')}>
+                <button
+                  className={styles.smallVoteBtn}
+                  onClick={() => handleCommentVote(answer.id, 'down')}
+                >
                   <DislikeOutlined />
                 </button>
-                {answer.isBest && <CheckCircleFilled className={styles.bestIcon} />}
+                {answer.isBest && (
+                  <CheckCircleFilled className={styles.bestIcon} />
+                )}
               </div>
 
               <div className={styles.answerContent}>
                 <div className={styles.answerMeta}>
-                  <Avatar size={28} style={{ background: answer.authorRole === 'giangvien' ? '#6366f1' : 'var(--color-primary)' }}>
+                  <Avatar
+                    size={28}
+                    style={{
+                      background:
+                        answer.authorRole === 'giangvien'
+                          ? '#6366f1'
+                          : 'var(--color-primary)',
+                    }}
+                  >
                     {answer.avatar}
                   </Avatar>
-                  <span className={styles.authorName} onClick={() => history.push(`/profile/${answer.authorId}`)}>
+                  <span
+                    className={styles.authorName}
+                    onClick={() => history.push(`/profile/${answer.authorId}`)}
+                  >
                     {answer.author}
                   </span>
                   <span className={styles.roleBadge}>
@@ -326,31 +486,56 @@ export default function PostDetail() {
                 </div>
 
                 <div className={styles.answerText}>
-                  {answer.content && answer.content.split('\n\n').map((block: string, i: number) => {
-                    if (block.startsWith('```')) {
-                      const code = block.replace(/```\w*\n?/, '').replace(/```$/, '');
-                      return (
-                        <div key={i} className={styles.codeWrapper}>
-                          <div className={styles.codeHeader}>
-                            <span>Code</span>
-                            <button className={styles.copyBtn}
-                              onClick={() => { navigator.clipboard.writeText(code); message.success('Đã sao chép!'); }}>
-                              <CopyOutlined /> Sao Chép
-                            </button>
-                          </div>
-                          <pre className={styles.codeBlock}><code>{code}</code></pre>
-                        </div>
-                      );
-                    }
-                    return <p key={i} className={styles.contentP}
-                      dangerouslySetInnerHTML={{ __html: block.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />;
-                  })}
+                  {answer.content &&
+                    answer.content
+                      .split('\n\n')
+                      .map((block: string, i: number) => {
+                        if (block.startsWith('```')) {
+                          const code = block
+                            .replace(/```\w*\n?/, '')
+                            .replace(/```$/, '');
+                          return (
+                            <div key={i} className={styles.codeWrapper}>
+                              <div className={styles.codeHeader}>
+                                <span>Code</span>
+                                <button
+                                  className={styles.copyBtn}
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(code);
+                                    message.success('Đã sao chép!');
+                                  }}
+                                >
+                                  <CopyOutlined /> Sao Chép
+                                </button>
+                              </div>
+                              <pre className={styles.codeBlock}>
+                                <code>{code}</code>
+                              </pre>
+                            </div>
+                          );
+                        }
+                        return (
+                          <p
+                            key={i}
+                            className={styles.contentP}
+                            dangerouslySetInnerHTML={{
+                              __html: block.replace(
+                                /\*\*(.*?)\*\*/g,
+                                '<strong>$1</strong>',
+                              ),
+                            }}
+                          />
+                        );
+                      })}
                 </div>
 
                 <div className={styles.answerActions}>
                   <button className={styles.replyBtn}>Trả Lời</button>
                   {isOwner && !answer.isBest && (
-                    <button className={styles.selectBestBtn} onClick={() => handleSelectBest(answer.id)}>
+                    <button
+                      className={styles.selectBestBtn}
+                      onClick={() => handleSelectBest(answer.id)}
+                    >
                       <CheckCircleOutlined /> Chọn Hay Nhất
                     </button>
                   )}
@@ -361,13 +546,24 @@ export default function PostDetail() {
                   <div className={styles.replies}>
                     {answer.replies.map((reply: any) => (
                       <div key={reply.id} className={styles.reply}>
-                        <Avatar size={24} style={{ background: '#6b7280', flexShrink: 0 }}>
+                        <Avatar
+                          size={24}
+                          style={{ background: '#6b7280', flexShrink: 0 }}
+                        >
                           {reply.author.charAt(0)}
                         </Avatar>
                         <div className={styles.replyContent}>
-                          <span className={styles.replyAuthor}>{reply.author}</span>
-                          <span className={styles.replyText}> {reply.content}</span>
-                          <span className={styles.replyTime}> · {reply.timestamp}</span>
+                          <span className={styles.replyAuthor}>
+                            {reply.author}
+                          </span>
+                          <span className={styles.replyText}>
+                            {' '}
+                            {reply.content}
+                          </span>
+                          <span className={styles.replyTime}>
+                            {' '}
+                            · {reply.timestamp}
+                          </span>
                         </div>
                       </div>
                     ))}
@@ -384,14 +580,21 @@ export default function PostDetail() {
           {!currentUser && (
             <div className={styles.loginPrompt}>
               <span>Bạn cần đăng nhập để trả lời.</span>
-              <Button type="primary" danger size="small" onClick={() => history.push('/login')}>
+              <Button
+                type="primary"
+                danger
+                size="small"
+                onClick={() => history.push('/login')}
+              >
                 Đăng Nhập
               </Button>
             </div>
           )}
           <div className={styles.editorToolbar}>
             {['B', 'I', 'Code', 'Link', 'Img'].map((tool) => (
-              <button key={tool} className={styles.toolBtn}>{tool}</button>
+              <button key={tool} className={styles.toolBtn}>
+                {tool}
+              </button>
             ))}
           </div>
           <textarea
@@ -402,8 +605,13 @@ export default function PostDetail() {
             rows={6}
           />
           <div className={styles.answerFormActions}>
-            <Button type="primary" danger size="large"
-              disabled={!newAnswer.trim()} onClick={handleSubmitAnswer}>
+            <Button
+              type="primary"
+              danger
+              size="large"
+              disabled={!newAnswer.trim()}
+              onClick={handleSubmitAnswer}
+            >
               Đăng Câu Trả Lời
             </Button>
             <span className={styles.charCount}>{newAnswer.length} ký tự</span>
@@ -413,4 +621,3 @@ export default function PostDetail() {
     </div>
   );
 }
-

@@ -11,7 +11,15 @@ import { formatTime } from '../index';
 
 export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
   await initDatabase();
-  const id = req.query?.id as string;
+
+  // Extract id from query (UmiJS passes dynamic segments as query params)
+  let id = req.query?.id as string;
+
+  // If not in query, try to extract from URL path
+  if (!id && req.url) {
+    const match = req.url.match(/\/api\/posts\/([^/?]+)/);
+    id = match ? match[1] : undefined;
+  }
 
   if (req.method === 'GET') {
     try {
