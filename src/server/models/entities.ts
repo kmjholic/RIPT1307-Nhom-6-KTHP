@@ -2,29 +2,29 @@ import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../db';
 
 export class UserEntity extends Model {
-  public id!: string;
-  public name!: string;
-  public email!: string;
-  public password?: string;
-  public role!: 'sinhvien' | 'giangvien' | 'admin';
-  public department?: string;
-  public major?: string;
-  public studentId?: string;
-  public avatar?: string;
-  public bio?: string;
-  public reputation!: number;
-  public posts!: number;
-  public answers!: number;
-  public votes!: number;
-  public followers!: number;
-  public following!: number;
-  public joinDate!: string;
-  public badges!: string[];
-  public status!: 'active' | 'banned';
+  declare id: string;
+  declare name: string;
+  declare email: string;
+  declare password?: string;
+  declare role: 'sinhvien' | 'giangvien' | 'admin';
+  declare department?: string;
+  declare major?: string;
+  declare studentId?: string;
+  declare avatar?: string;
+  declare bio?: string;
+  declare reputation: number;
+  declare posts: number;
+  declare answers: number;
+  declare votes: number;
+  declare followers: number;
+  declare following: number;
+  declare joinDate: string;
+  declare badges: string[];
+  declare status: 'active' | 'banned';
 
   // Associations
-  public questions?: QuestionEntity[];
-  public comments?: CommentEntity[];
+  declare questions?: QuestionEntity[];
+  declare comments?: CommentEntity[];
 }
 
 UserEntity.init(
@@ -32,7 +32,7 @@ UserEntity.init(
     id: { type: DataTypes.STRING, primaryKey: true },
     name: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
-    password: { type: DataTypes.STRING(255), allowNull: true }, // Tăng độ dài cho bcrypt hash
+    password: { type: DataTypes.STRING(255), allowNull: true },
     role: {
       type: DataTypes.ENUM('sinhvien', 'giangvien', 'admin'),
       defaultValue: 'sinhvien',
@@ -78,14 +78,14 @@ UserEntity.init(
 );
 
 export class TagEntity extends Model {
-  public name!: string;
-  public count!: number;
-  public color!: string;
-  public category!: string;
-  public desc!: string;
+  declare name: string;
+  declare count: number;
+  declare color: string;
+  declare category: string;
+  declare desc: string;
 
   // Associations
-  public taggedQuestions?: QuestionEntity[];
+  declare taggedQuestions?: QuestionEntity[];
 }
 
 TagEntity.init(
@@ -109,23 +109,23 @@ TagEntity.init(
 );
 
 export class QuestionEntity extends Model {
-  public id!: string;
-  public title!: string;
-  public excerpt!: string;
-  public content!: string;
-  public authorId!: string;
-  public votes!: number;
-  public commentsCount!: number;
-  public views!: number;
-  public subject?: string;
-  public isSolved!: boolean;
-  public status!: 'active' | 'reported' | 'hidden';
-  public createdAt!: Date;
+  declare id: string;
+  declare title: string;
+  declare excerpt: string;
+  declare content: string;
+  declare authorId: string;
+  declare votes: number;
+  declare commentsCount: number;
+  declare views: number;
+  declare subject?: string;
+  declare isSolved: boolean;
+  declare status: 'active' | 'reported' | 'hidden';
+  declare createdAt: Date;
 
   // Associations
-  public author?: UserEntity;
-  public questionTags?: TagEntity[];
-  public questionComments?: CommentEntity[];
+  declare author?: UserEntity;
+  declare questionTags?: TagEntity[];
+  declare questionComments?: CommentEntity[];
 }
 
 QuestionEntity.init(
@@ -156,19 +156,19 @@ QuestionEntity.init(
 );
 
 export class CommentEntity extends Model {
-  public id!: string;
-  public questionId!: string;
-  public parentId?: string | null;
-  public authorId!: string;
-  public votes!: number;
-  public isBest!: boolean;
-  public content!: string;
-  public createdAt!: Date;
+  declare id: string;
+  declare questionId: string;
+  declare parentId?: string | null;
+  declare authorId: string;
+  declare votes: number;
+  declare isBest: boolean;
+  declare content: string;
+  declare createdAt: Date;
 
   // Associations
-  public author?: UserEntity;
-  public replies?: CommentEntity[];
-  public parent?: CommentEntity;
+  declare author?: UserEntity;
+  declare replies?: CommentEntity[];
+  declare parent?: CommentEntity;
 }
 
 CommentEntity.init(
@@ -192,11 +192,11 @@ CommentEntity.init(
 );
 
 export class VoteEntity extends Model {
-  public id!: string;
-  public userId!: string;
-  public targetId!: string;
-  public targetType!: 'question' | 'comment';
-  public value!: number;
+  declare id: string;
+  declare userId: string;
+  declare targetId: string;
+  declare targetType: 'question' | 'comment';
+  declare value: number;
 }
 
 VoteEntity.init(

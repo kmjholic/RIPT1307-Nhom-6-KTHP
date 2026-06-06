@@ -52605,28 +52605,6 @@ var init_entities = __esm({
     init_lib();
     init_db();
     UserEntity = class extends Model {
-      id;
-      name;
-      email;
-      password;
-      role;
-      department;
-      major;
-      studentId;
-      avatar;
-      bio;
-      reputation;
-      posts;
-      answers;
-      votes;
-      followers;
-      following;
-      joinDate;
-      badges;
-      status;
-      // Associations
-      questions;
-      comments;
     };
     UserEntity.init(
       {
@@ -52634,7 +52612,6 @@ var init_entities = __esm({
         name: { type: DataTypes.STRING, allowNull: false },
         email: { type: DataTypes.STRING, allowNull: false, unique: true },
         password: { type: DataTypes.STRING(255), allowNull: true },
-        // Tăng độ dài cho bcrypt hash
         role: {
           type: DataTypes.ENUM("sinhvien", "giangvien", "admin"),
           defaultValue: "sinhvien"
@@ -52679,13 +52656,6 @@ var init_entities = __esm({
       }
     );
     TagEntity = class extends Model {
-      name;
-      count;
-      color;
-      category;
-      desc;
-      // Associations
-      taggedQuestions;
     };
     TagEntity.init(
       {
@@ -52707,22 +52677,6 @@ var init_entities = __esm({
       }
     );
     QuestionEntity = class extends Model {
-      id;
-      title;
-      excerpt;
-      content;
-      authorId;
-      votes;
-      commentsCount;
-      views;
-      subject;
-      isSolved;
-      status;
-      createdAt;
-      // Associations
-      author;
-      questionTags;
-      questionComments;
     };
     QuestionEntity.init(
       {
@@ -52751,18 +52705,6 @@ var init_entities = __esm({
       }
     );
     CommentEntity = class extends Model {
-      id;
-      questionId;
-      parentId;
-      authorId;
-      votes;
-      isBest;
-      content;
-      createdAt;
-      // Associations
-      author;
-      replies;
-      parent;
     };
     CommentEntity.init(
       {
@@ -52784,11 +52726,6 @@ var init_entities = __esm({
       }
     );
     VoteEntity = class extends Model {
-      id;
-      userId;
-      targetId;
-      targetType;
-      value;
     };
     VoteEntity.init(
       {
@@ -55019,7 +54956,7 @@ __export(seed_exports, {
 });
 async function seedDatabase() {
   try {
-    await UserEntity.sequelize?.sync({ force: true });
+    await UserEntity.sequelize?.sync({ alter: true });
     console.log("[Database] \u0110\u1ED3ng b\u1ED9 c\xE1c b\u1EA3ng th\xE0nh c\xF4ng.");
     const userCount = await UserEntity.count();
     if (userCount === 0) {

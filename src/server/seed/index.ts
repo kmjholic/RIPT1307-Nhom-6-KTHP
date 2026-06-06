@@ -16,7 +16,7 @@ export { MOCK_ADMIN_USERS, MOCK_USERS } from './users';
 export async function seedDatabase() {
   try {
     // 1. Đồng bộ cấu trúc bảng
-    await UserEntity.sequelize?.sync({ force: true });
+    await UserEntity.sequelize?.sync({ alter: true });
     console.log('[Database] Đồng bộ các bảng thành công.');
 
     // 2. Seed Users

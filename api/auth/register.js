@@ -56399,6 +56399,187 @@ var init_lib = __esm({
   }
 });
 
+// src/server/models/entities.ts
+var UserEntity, TagEntity, QuestionEntity, CommentEntity, VoteEntity;
+var init_entities = __esm({
+  "src/server/models/entities.ts"() {
+    "use strict";
+    init_lib();
+    init_db();
+    UserEntity = class extends Model {
+    };
+    UserEntity.init(
+      {
+        id: { type: DataTypes.STRING, primaryKey: true },
+        name: { type: DataTypes.STRING, allowNull: false },
+        email: { type: DataTypes.STRING, allowNull: false, unique: true },
+        password: { type: DataTypes.STRING(255), allowNull: true },
+        role: {
+          type: DataTypes.ENUM("sinhvien", "giangvien", "admin"),
+          defaultValue: "sinhvien"
+        },
+        department: { type: DataTypes.STRING, allowNull: true },
+        major: { type: DataTypes.STRING, allowNull: true },
+        studentId: { type: DataTypes.STRING, allowNull: true },
+        avatar: { type: DataTypes.STRING, allowNull: true },
+        bio: { type: DataTypes.TEXT, allowNull: true },
+        reputation: { type: DataTypes.INTEGER, defaultValue: 10 },
+        posts: { type: DataTypes.INTEGER, defaultValue: 0 },
+        answers: { type: DataTypes.INTEGER, defaultValue: 0 },
+        votes: { type: DataTypes.INTEGER, defaultValue: 0 },
+        followers: { type: DataTypes.INTEGER, defaultValue: 0 },
+        following: { type: DataTypes.INTEGER, defaultValue: 0 },
+        joinDate: { type: DataTypes.STRING, allowNull: false },
+        badges: {
+          type: DataTypes.TEXT,
+          defaultValue: "[]",
+          get() {
+            const rawValue = this.getDataValue("badges");
+            try {
+              return rawValue ? JSON.parse(rawValue) : [];
+            } catch {
+              return [];
+            }
+          },
+          set(val) {
+            this.setDataValue("badges", JSON.stringify(val));
+          }
+        },
+        status: {
+          type: DataTypes.ENUM("active", "banned"),
+          defaultValue: "active"
+        }
+      },
+      {
+        sequelize,
+        modelName: "User",
+        tableName: "Users",
+        timestamps: false
+      }
+    );
+    TagEntity = class extends Model {
+    };
+    TagEntity.init(
+      {
+        name: { type: DataTypes.STRING, primaryKey: true },
+        count: { type: DataTypes.INTEGER, defaultValue: 0 },
+        color: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          defaultValue: "#3b82f6"
+        },
+        category: { type: DataTypes.STRING, allowNull: false },
+        desc: { type: DataTypes.TEXT, allowNull: true }
+      },
+      {
+        sequelize,
+        modelName: "Tag",
+        tableName: "Tags",
+        timestamps: false
+      }
+    );
+    QuestionEntity = class extends Model {
+    };
+    QuestionEntity.init(
+      {
+        id: { type: DataTypes.STRING, primaryKey: true },
+        title: { type: DataTypes.STRING, allowNull: false },
+        excerpt: { type: DataTypes.TEXT, allowNull: false },
+        content: { type: DataTypes.TEXT, allowNull: false },
+        authorId: { type: DataTypes.STRING, allowNull: false },
+        votes: { type: DataTypes.INTEGER, defaultValue: 0 },
+        commentsCount: { type: DataTypes.INTEGER, defaultValue: 0 },
+        views: { type: DataTypes.INTEGER, defaultValue: 0 },
+        subject: { type: DataTypes.STRING, allowNull: true },
+        isSolved: { type: DataTypes.BOOLEAN, defaultValue: false },
+        status: {
+          type: DataTypes.ENUM("active", "reported", "hidden"),
+          defaultValue: "active"
+        },
+        createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+      },
+      {
+        sequelize,
+        modelName: "Question",
+        tableName: "Questions",
+        timestamps: true,
+        updatedAt: false
+      }
+    );
+    CommentEntity = class extends Model {
+    };
+    CommentEntity.init(
+      {
+        id: { type: DataTypes.STRING, primaryKey: true },
+        questionId: { type: DataTypes.STRING, allowNull: false },
+        parentId: { type: DataTypes.STRING, allowNull: true },
+        authorId: { type: DataTypes.STRING, allowNull: false },
+        votes: { type: DataTypes.INTEGER, defaultValue: 0 },
+        isBest: { type: DataTypes.BOOLEAN, defaultValue: false },
+        content: { type: DataTypes.TEXT, allowNull: false },
+        createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+      },
+      {
+        sequelize,
+        modelName: "Comment",
+        tableName: "Comments",
+        timestamps: true,
+        updatedAt: false
+      }
+    );
+    VoteEntity = class extends Model {
+    };
+    VoteEntity.init(
+      {
+        id: { type: DataTypes.STRING, primaryKey: true },
+        userId: { type: DataTypes.STRING, allowNull: false },
+        targetId: { type: DataTypes.STRING, allowNull: false },
+        targetType: {
+          type: DataTypes.ENUM("question", "comment"),
+          allowNull: false
+        },
+        value: { type: DataTypes.INTEGER, allowNull: false }
+      },
+      {
+        sequelize,
+        modelName: "Vote",
+        tableName: "Votes",
+        timestamps: false,
+        indexes: [
+          {
+            unique: true,
+            fields: ["userId", "targetId", "targetType"]
+          }
+        ]
+      }
+    );
+    UserEntity.hasMany(QuestionEntity, { foreignKey: "authorId", as: "questions" });
+    QuestionEntity.belongsTo(UserEntity, { foreignKey: "authorId", as: "author" });
+    UserEntity.hasMany(CommentEntity, { foreignKey: "authorId", as: "comments" });
+    CommentEntity.belongsTo(UserEntity, { foreignKey: "authorId", as: "author" });
+    QuestionEntity.hasMany(CommentEntity, {
+      foreignKey: "questionId",
+      as: "questionComments"
+    });
+    CommentEntity.belongsTo(QuestionEntity, { foreignKey: "questionId" });
+    CommentEntity.hasMany(CommentEntity, { foreignKey: "parentId", as: "replies" });
+    CommentEntity.belongsTo(CommentEntity, {
+      foreignKey: "parentId",
+      as: "parent"
+    });
+    QuestionEntity.belongsToMany(TagEntity, {
+      through: "QuestionTags",
+      foreignKey: "questionId",
+      as: "questionTags"
+    });
+    TagEntity.belongsToMany(QuestionEntity, {
+      through: "QuestionTags",
+      foreignKey: "tagName",
+      as: "taggedQuestions"
+    });
+  }
+});
+
 // node_modules/bcryptjs/dist/bcrypt.js
 var require_bcrypt = __commonJS({
   "node_modules/bcryptjs/dist/bcrypt.js"(exports2, module2) {
@@ -58577,7 +58758,7 @@ __export(seed_exports, {
 });
 async function seedDatabase() {
   try {
-    await UserEntity.sequelize?.sync({ force: true });
+    await UserEntity.sequelize?.sync({ alter: true });
     console.log("[Database] \u0110\u1ED3ng b\u1ED9 c\xE1c b\u1EA3ng th\xE0nh c\xF4ng.");
     const userCount = await UserEntity.count();
     if (userCount === 0) {
@@ -58741,250 +58922,6 @@ var init_db = __esm({
       }
     });
     isInitialized = false;
-  }
-});
-
-// src/server/models/entities.ts
-var UserEntity, TagEntity, QuestionEntity, CommentEntity, VoteEntity;
-var init_entities = __esm({
-  "src/server/models/entities.ts"() {
-    "use strict";
-    init_lib();
-    init_db();
-    UserEntity = class extends Model {
-      id;
-      name;
-      email;
-      password;
-      role;
-      department;
-      major;
-      studentId;
-      avatar;
-      bio;
-      reputation;
-      posts;
-      answers;
-      votes;
-      followers;
-      following;
-      joinDate;
-      badges;
-      status;
-      // Associations
-      questions;
-      comments;
-    };
-    UserEntity.init(
-      {
-        id: { type: DataTypes.STRING, primaryKey: true },
-        name: { type: DataTypes.STRING, allowNull: false },
-        email: { type: DataTypes.STRING, allowNull: false, unique: true },
-        password: { type: DataTypes.STRING(255), allowNull: true },
-        // Tăng độ dài cho bcrypt hash
-        role: {
-          type: DataTypes.ENUM("sinhvien", "giangvien", "admin"),
-          defaultValue: "sinhvien"
-        },
-        department: { type: DataTypes.STRING, allowNull: true },
-        major: { type: DataTypes.STRING, allowNull: true },
-        studentId: { type: DataTypes.STRING, allowNull: true },
-        avatar: { type: DataTypes.STRING, allowNull: true },
-        bio: { type: DataTypes.TEXT, allowNull: true },
-        reputation: { type: DataTypes.INTEGER, defaultValue: 10 },
-        posts: { type: DataTypes.INTEGER, defaultValue: 0 },
-        answers: { type: DataTypes.INTEGER, defaultValue: 0 },
-        votes: { type: DataTypes.INTEGER, defaultValue: 0 },
-        followers: { type: DataTypes.INTEGER, defaultValue: 0 },
-        following: { type: DataTypes.INTEGER, defaultValue: 0 },
-        joinDate: { type: DataTypes.STRING, allowNull: false },
-        badges: {
-          type: DataTypes.TEXT,
-          defaultValue: "[]",
-          get() {
-            const rawValue = this.getDataValue("badges");
-            try {
-              return rawValue ? JSON.parse(rawValue) : [];
-            } catch {
-              return [];
-            }
-          },
-          set(val) {
-            this.setDataValue("badges", JSON.stringify(val));
-          }
-        },
-        status: {
-          type: DataTypes.ENUM("active", "banned"),
-          defaultValue: "active"
-        }
-      },
-      {
-        sequelize,
-        modelName: "User",
-        tableName: "Users",
-        timestamps: false
-      }
-    );
-    TagEntity = class extends Model {
-      name;
-      count;
-      color;
-      category;
-      desc;
-      // Associations
-      taggedQuestions;
-    };
-    TagEntity.init(
-      {
-        name: { type: DataTypes.STRING, primaryKey: true },
-        count: { type: DataTypes.INTEGER, defaultValue: 0 },
-        color: {
-          type: DataTypes.STRING,
-          allowNull: false,
-          defaultValue: "#3b82f6"
-        },
-        category: { type: DataTypes.STRING, allowNull: false },
-        desc: { type: DataTypes.TEXT, allowNull: true }
-      },
-      {
-        sequelize,
-        modelName: "Tag",
-        tableName: "Tags",
-        timestamps: false
-      }
-    );
-    QuestionEntity = class extends Model {
-      id;
-      title;
-      excerpt;
-      content;
-      authorId;
-      votes;
-      commentsCount;
-      views;
-      subject;
-      isSolved;
-      status;
-      createdAt;
-      // Associations
-      author;
-      questionTags;
-      questionComments;
-    };
-    QuestionEntity.init(
-      {
-        id: { type: DataTypes.STRING, primaryKey: true },
-        title: { type: DataTypes.STRING, allowNull: false },
-        excerpt: { type: DataTypes.TEXT, allowNull: false },
-        content: { type: DataTypes.TEXT, allowNull: false },
-        authorId: { type: DataTypes.STRING, allowNull: false },
-        votes: { type: DataTypes.INTEGER, defaultValue: 0 },
-        commentsCount: { type: DataTypes.INTEGER, defaultValue: 0 },
-        views: { type: DataTypes.INTEGER, defaultValue: 0 },
-        subject: { type: DataTypes.STRING, allowNull: true },
-        isSolved: { type: DataTypes.BOOLEAN, defaultValue: false },
-        status: {
-          type: DataTypes.ENUM("active", "reported", "hidden"),
-          defaultValue: "active"
-        },
-        createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
-      },
-      {
-        sequelize,
-        modelName: "Question",
-        tableName: "Questions",
-        timestamps: true,
-        updatedAt: false
-      }
-    );
-    CommentEntity = class extends Model {
-      id;
-      questionId;
-      parentId;
-      authorId;
-      votes;
-      isBest;
-      content;
-      createdAt;
-      // Associations
-      author;
-      replies;
-      parent;
-    };
-    CommentEntity.init(
-      {
-        id: { type: DataTypes.STRING, primaryKey: true },
-        questionId: { type: DataTypes.STRING, allowNull: false },
-        parentId: { type: DataTypes.STRING, allowNull: true },
-        authorId: { type: DataTypes.STRING, allowNull: false },
-        votes: { type: DataTypes.INTEGER, defaultValue: 0 },
-        isBest: { type: DataTypes.BOOLEAN, defaultValue: false },
-        content: { type: DataTypes.TEXT, allowNull: false },
-        createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
-      },
-      {
-        sequelize,
-        modelName: "Comment",
-        tableName: "Comments",
-        timestamps: true,
-        updatedAt: false
-      }
-    );
-    VoteEntity = class extends Model {
-      id;
-      userId;
-      targetId;
-      targetType;
-      value;
-    };
-    VoteEntity.init(
-      {
-        id: { type: DataTypes.STRING, primaryKey: true },
-        userId: { type: DataTypes.STRING, allowNull: false },
-        targetId: { type: DataTypes.STRING, allowNull: false },
-        targetType: {
-          type: DataTypes.ENUM("question", "comment"),
-          allowNull: false
-        },
-        value: { type: DataTypes.INTEGER, allowNull: false }
-      },
-      {
-        sequelize,
-        modelName: "Vote",
-        tableName: "Votes",
-        timestamps: false,
-        indexes: [
-          {
-            unique: true,
-            fields: ["userId", "targetId", "targetType"]
-          }
-        ]
-      }
-    );
-    UserEntity.hasMany(QuestionEntity, { foreignKey: "authorId", as: "questions" });
-    QuestionEntity.belongsTo(UserEntity, { foreignKey: "authorId", as: "author" });
-    UserEntity.hasMany(CommentEntity, { foreignKey: "authorId", as: "comments" });
-    CommentEntity.belongsTo(UserEntity, { foreignKey: "authorId", as: "author" });
-    QuestionEntity.hasMany(CommentEntity, {
-      foreignKey: "questionId",
-      as: "questionComments"
-    });
-    CommentEntity.belongsTo(QuestionEntity, { foreignKey: "questionId" });
-    CommentEntity.hasMany(CommentEntity, { foreignKey: "parentId", as: "replies" });
-    CommentEntity.belongsTo(CommentEntity, {
-      foreignKey: "parentId",
-      as: "parent"
-    });
-    QuestionEntity.belongsToMany(TagEntity, {
-      through: "QuestionTags",
-      foreignKey: "questionId",
-      as: "questionTags"
-    });
-    TagEntity.belongsToMany(QuestionEntity, {
-      through: "QuestionTags",
-      foreignKey: "tagName",
-      as: "taggedQuestions"
-    });
   }
 });
 
@@ -59343,9 +59280,9 @@ var middlewares_default = async (req, res, next) => {
 
 // src/server/services/authService.ts
 var import_jsonwebtoken = __toESM(require_jsonwebtoken());
+init_db();
 init_entities();
 init_User();
-init_db();
 var JWT_SECRET = process.env.JWT_SECRET || "your-super-secret-key-change-in-production";
 var JWT_EXPIRATION = "7d";
 function createToken(userId) {

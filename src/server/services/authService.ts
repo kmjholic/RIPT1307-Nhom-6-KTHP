@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { UserEntity } from '../models/entities';
-import { hashPassword, verifyPassword } from '../models/User';
 import { initDatabase } from '../db';
-import type { UserRole, User } from '../models/User';
+import { UserEntity } from '../models/entities';
+import type { User, UserRole } from '../models/User';
+import { hashPassword, verifyPassword } from '../models/User';
 
 export interface LoginInput {
   email: string;
@@ -23,7 +23,8 @@ export interface AuthResult {
   token: string;
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key-change-in-production';
+const JWT_SECRET =
+  process.env.JWT_SECRET || 'your-super-secret-key-change-in-production';
 const JWT_EXPIRATION = '7d';
 
 export function createToken(userId: string): string {
@@ -42,14 +43,27 @@ export function verifyToken(token: string): { userId: string } | null {
 export async function login(input: LoginInput): Promise<AuthResult> {
   await initDatabase();
   const { email, password } = input;
-  
+
   const found = await UserEntity.findOne({ where: { email } });
 
+  // 👇 BLOCK LOG DEBUG TỐI THƯỢNG TAO CHÈN VÀO ĐÂY:
+  console.log('=========================================');
+  console.log('🔥 LOG DEBUG ĐĂNG NHẬP THỰC TẾ:');
+  console.log('--> Email client gửi lên:', `"${email}"`);
+  console.log('--> Mật khẩu thô client gửi lên:', `"${password}"`);
+  console.log('--> Tìm thấy User trong DB không?:', found ? 'CÓ' : 'KHÔNG');
+
   if (found) {
+    console.log('--> Chuỗi Hash mật khẩu lấy từ DB:', `"${found.password}"`);
+    const checkVerify = await verifyPassword(password, found.password);
+    console.log('--> Kết quả hàm verifyPassword trả về:', checkVerify);
+    console.log('=========================================');
+
     if (found.status === 'banned') {
       throw new Error('Tài khoản của bạn đã bị khóa bởi quản trị viên');
     }
-    if (await verifyPassword(password, found.password)) {
+
+    if (checkVerify) {
       // Map về interface User để trả về client
       const userObj: User = {
         id: found.id,
@@ -73,6 +87,11 @@ export async function login(input: LoginInput): Promise<AuthResult> {
       };
       return { user: userObj, token: createToken(found.id) };
     }
+  } else {
+    console.log(
+      '❌ LỖI CHÍ MẠNG: KHÔNG TÌM THẤY USER NÀO CÓ EMAIL NÀY TRONG DB!',
+    );
+    console.log('=========================================');
   }
 
   throw new Error('Email hoặc mật khẩu không chính xác');
@@ -80,7 +99,7 @@ export async function login(input: LoginInput): Promise<AuthResult> {
 
 export async function register(input: RegisterInput): Promise<AuthResult> {
   await initDatabase();
-  
+
   // Kiểm tra email tồn tại
   const exist = await UserEntity.findOne({ where: { email: input.email } });
   if (exist) {
